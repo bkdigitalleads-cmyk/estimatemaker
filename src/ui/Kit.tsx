@@ -6,7 +6,7 @@
  * QuietButton. One type scale: 28 (Title), 17 (body), 13 (Caption).
  */
 import React, { useEffect, useRef } from 'react';
-import { ActivityIndicator, Animated, Modal, Pressable, PressableProps, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import { ActivityIndicator, Animated, KeyboardAvoidingView, Modal, Pressable, ScrollView, PressableProps, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MAIN_BUTTON, Theme, radius, space, type } from '../theme';
 import Glyph, { GlyphName } from './Glyph';
@@ -295,7 +295,7 @@ export function Drawer({ theme, visible, onClose, children, title }: { theme: Th
   const insets = useSafeAreaInsets();
   return (
     <Modal visible={visible} transparent animationType={MODAL_ANIMATION} onRequestClose={onClose}>
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1, justifyContent: 'flex-end' }}>
         <Pressable style={[StyleSheet.absoluteFill, { backgroundColor: theme.scrim }]} onPress={onClose} accessibilityLabel="Close" accessibilityRole="button" />
         <View style={[styles.drawer, { backgroundColor: theme.bg, borderColor: theme.edge, paddingBottom: Math.max(insets.bottom, space.l) }]}>
           <View style={styles.drawerHead}>
@@ -304,9 +304,11 @@ export function Drawer({ theme, visible, onClose, children, title }: { theme: Th
             </Text>
             <GlyphButton theme={theme} glyph="close" label="Close" onPress={onClose} />
           </View>
-          {children}
+          <ScrollView keyboardShouldPersistTaps="handled" bounces={false} showsVerticalScrollIndicator={false}>
+            {children}
+          </ScrollView>
         </View>
-      </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 }

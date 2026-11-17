@@ -2,6 +2,15 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-17: 1.0.0 build 1, step 3 of 7: screens.
+  - Four tabs: Documents, Clients, Items, Settings. Screens over the tabs go on a simple stack (back pops one); after convert or duplicate the new document replaces the old one, so back goes to the list.
+  - Documents (home): the business name, two numbers on a paper strip (billed this month and unpaid, with the overdue count; other currencies on a small line), New document (estimate, quote, invoice or receipt, each with one line saying what it is for), search by number, client or amount, type pills, and a filter sheet for status and client. Each row: type, number and date, client, amount, and a status stamp (OVERDUE in red when an invoice is past due).
+  - Editor: one scrolling page saved as you go (400 ms after the last change, and on leaving). Status pills that fit the type; client picker with find-or-add; date and due or valid-until on a month calendar with quick picks (On receipt, 7, 14, 30 days); lines with description, quantity, unit, rate, the per-line tax switch, Save to my items, move up and down, remove; saved items in one tap; discount as % or amount; tax rate; deposit or paid; Paid by on receipts; balance due (or credit); notes and terms with "use for every new one"; the owner's signature switch, or Add your signature; Sign here for the client. Bottom: Make invoice (or receipt) and Preview and send. More: change the number, duplicate, convert, delete.
+  - Sign here: the total above the pad, the Skia pad from the engine (Ink pen), undo and clear, the signer's name; an estimate or quote signed by the client is marked accepted. No rating prompt while it is open.
+  - Clients (A to Z, what each owes, their documents, New estimate for this client; deleting one keeps their documents), Items (price list), Your business (logo through the system photo picker, which needs no Photos permission, re-encoded as PNG through Skia; name, address, phone, email, website, tax or license number), Your signature, and Settings for currency, tax name and rate, due and valid days, numbering per type, template and paper size.
+  - Preview is a placeholder until step 4.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 38 passing, `npx expo export --platform ios` bundles.
+
 - 2026-11-17: 1.0.0 build 1, step 2 of 7: data layer.
   - SQLite through expo-sqlite (src/db/native.ts, one file, estimatemaker.db, WAL), behind a small Db interface (src/db/schema.ts) so the same SQL runs on Node's built-in node:sqlite in the tests. Migrations are a list that only grows; PRAGMA user_version counts them; each runs in its own transaction, and a database from a newer app is refused rather than damaged.
   - Tables: kv (settings, flags, counters for free exports), counters (prefix and next number per type), clients, items, docs (one model for all four types, with the client's details copied in so a sent document keeps what it printed, and the total and balance kept for the list), lines (in order).

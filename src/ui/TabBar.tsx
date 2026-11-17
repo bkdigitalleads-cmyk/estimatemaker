@@ -9,8 +9,8 @@ export type Tab = 'documents' | 'clients' | 'items' | 'settings';
 
 const TABS: { id: Tab; label: string; glyph: GlyphName }[] = [
   { id: 'documents', label: 'Documents', glyph: 'documents' },
-  { id: 'clients', label: 'Clients', glyph: 'library' },
-  { id: 'items', label: 'Items', glyph: 'create' },
+  { id: 'clients', label: 'Clients', glyph: 'client' },
+  { id: 'items', label: 'Items', glyph: 'items' },
   { id: 'settings', label: 'Settings', glyph: 'settings' },
 ];
 

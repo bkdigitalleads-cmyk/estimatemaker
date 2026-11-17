@@ -36,6 +36,8 @@ export interface Theme {
   picked: string;
   pickedEdge: string;
   danger: string;
+  /** Paid and accepted stamps. */
+  good: string;
   /** The checkerboard behind a transparent export. */
   checkA: string;
   checkB: string;
@@ -61,6 +63,7 @@ export const lightTheme: Theme = {
   picked: '#E0DAD0',
   pickedEdge: '#1A1A1E',
   danger: '#A3312A',
+  good: '#2F6B4A',
   checkA: '#FFFFFF',
   checkB: '#E4E1DB',
   scrim: 'rgba(26, 24, 20, 0.36)',
@@ -85,6 +88,7 @@ export const darkTheme: Theme = {
   picked: '#3A3833',
   pickedEdge: '#ECE8E0',
   danger: '#E08B80',
+  good: '#7FC29B',
   checkA: '#F2F0EC',
   checkB: '#D6D2CB',
   scrim: 'rgba(0, 0, 0, 0.5)',

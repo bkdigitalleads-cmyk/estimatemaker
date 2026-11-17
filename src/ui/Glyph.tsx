@@ -35,7 +35,16 @@ export type GlyphName =
   | 'initials'
   | 'pencil'
   | 'chevron'
-  | 'star';
+  | 'star'
+  | 'client'
+  | 'items'
+  | 'convert'
+  | 'search'
+  | 'mail'
+  | 'print'
+  | 'sign'
+  | 'more'
+  | 'filter';
 
 const D: Record<GlyphName, string> = {
   create: 'M3.5 15.5c2.2-.4 3.4-6.8 5.6-6.8 1.6 0 .2 6.9 2.2 6.9 1.6 0 2.4-4.3 3.9-4.3 1.2 0 .8 3.2 2.1 3.2 1 0 1.8-1.1 3.2-1.6M3.5 19.5h17',
@@ -66,6 +75,15 @@ const D: Record<GlyphName, string> = {
   pencil: 'M14.5 6.5l3 3M5 19l1-4L15.8 5.2c.6-.6 1.5-.6 2.1 0l.9.9c.6.6.6 1.5 0 2.1L9 18l-4 1z',
   chevron: 'M9.5 6.5L15 12l-5.5 5.5',
   star: 'M12 4.5l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5-3.6-3.5 5-.7L12 4.5z',
+  client: 'M12 11.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM5 19.5c.6-3.4 3.4-5.5 7-5.5s6.4 2.1 7 5.5',
+  items: 'M9.5 7h10M9.5 12h10M9.5 17h10M4.5 7h1.5M4.5 12h1.5M4.5 17h1.5',
+  convert: 'M4.5 9h13M14 5.5L17.5 9 14 12.5M19.5 15h-13M10 11.5L6.5 15l3.5 3.5',
+  search: 'M10.5 16.5a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM15 15l4.5 4.5',
+  mail: 'M5.6 6h12.8c.9 0 1.6.7 1.6 1.6v8.8c0 .9-.7 1.6-1.6 1.6H5.6c-.9 0-1.6-.7-1.6-1.6V7.6C4 6.7 4.7 6 5.6 6zM4.5 7l7.5 6 7.5-6',
+  print: 'M7.5 9V4.5h9V9M7.5 16.5H5.6c-.9 0-1.6-.7-1.6-1.6v-4.3c0-.9.7-1.6 1.6-1.6h12.8c.9 0 1.6.7 1.6 1.6v4.3c0 .9-.7 1.6-1.6 1.6h-1.9M7.5 13.5h9v6h-9z',
+  sign: 'M3.5 15.5c2.2-.4 3.4-6.8 5.6-6.8 1.6 0 .2 6.9 2.2 6.9 1.6 0 2.4-4.3 3.9-4.3 1.2 0 .8 3.2 2.1 3.2 1 0 1.8-1.1 3.2-1.6M3.5 19.5h17',
+  more: 'M6 12h.01M12 12h.01M18 12h.01',
+  filter: 'M4.5 6.5h15M7.5 12h9M10.5 17.5h3',
 };
 
 export default function Glyph({ name, size = 24, color, weight = 1.7, fill }: { name: GlyphName; size?: number; color: string; weight?: number; fill?: string }) {
@@ -73,6 +91,7 @@ export default function Glyph({ name, size = 24, color, weight = 1.7, fill }: { 
     <Svg width={size} height={size} viewBox="0 0 24 24" accessible={false}>
       <Path d={D[name]} stroke={color} strokeWidth={weight} strokeLinecap="round" strokeLinejoin="round" fill={fill ?? 'none'} />
       {name === 'photo' ? <Circle cx={15} cy={9.5} r={1.3} fill={color} /> : null}
+      {name === 'more' ? [6, 12, 18].map((x) => <Circle key={x} cx={x} cy={12} r={1.6} fill={color} />) : null}
     </Svg>
   );
 }

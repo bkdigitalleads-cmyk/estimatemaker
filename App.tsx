@@ -9,16 +9,47 @@ import { kvGet, kvSet, sweepCache } from './src/store';
 import { afterOnboardingPaywall } from './src/rules';
 import { PRIVACY_URL } from './src/links';
 import Settings from './src/screens/Settings';
+import Documents from './src/screens/Documents';
+import Editor from './src/screens/Editor';
+import Clients, { ClientEditor } from './src/screens/Clients';
+import Items, { ItemEditor } from './src/screens/Items';
+import Business from './src/screens/Business';
+import { MySignature, SignHere } from './src/screens/Sign';
+import Preview from './src/screens/Preview';
+import { DataProvider, useData } from './src/data';
+import type { Client, Item } from './src/db/repo';
+import type { DocType } from './src/model';
 import PaywallModal from './src/screens/Paywall';
 import Welcome, { TrialSteps } from './src/screens/Welcome';
 import TabBar, { Tab } from './src/ui/TabBar';
 import { Drawer, InkButton, Title, Toast } from './src/ui/Kit';
 
+/** A screen over the tabs. Back pops one. */
+type Over =
+  | { name: 'doc'; id: string }
+  | { name: 'preview'; id: string }
+  | { name: 'signHere'; id: string }
+  | { name: 'mySignature' }
+  | { name: 'business' }
+  | { name: 'client'; client: Client | null }
+  | { name: 'item'; item: Item | null };
+
 function Shell() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { ready, notice, isPro, askPro } = useApp();
+  const data = useData();
   const [tab, setTab] = useState<Tab>('documents');
+  const [stack, setStack] = useState<Over[]>([]);
+  const push = (o: Over) => setStack((s) => [...s, o]);
+  const pop = () => setStack((s) => s.slice(0, -1));
+  /** Opens a document in place of the one on top (after convert or duplicate, back goes to the list). */
+  const openDoc = (id: string) => setStack((s) => [...s.filter((o) => o.name !== 'doc' && o.name !== 'preview'), { name: 'doc', id }]);
+  const newDoc = async (type: DocType, client?: Client | null) => {
+    const d = await data.newDoc(type, client ?? null);
+    setTab('documents');
+    setStack([{ name: 'doc', id: d.id }]);
+  };
   const [onboarded, setOnboarded] = useState<boolean | null>(null);
   // New installs: four screens, the first estimate, the trial and reminder screens, then the paywall.
   const [step, setStep] = useState<'intro' | 'trial' | 'paywall'>('intro');
@@ -53,7 +84,15 @@ function Shell() {
     });
   };
 
-  if (!ready || onboarded === null) return <View style={{ flex: 1, backgroundColor: theme.bg }} />;
+  if (!ready || !data.loaded || onboarded === null) return <View style={{ flex: 1, backgroundColor: theme.bg }} />;
+  if (data.failed) {
+    return (
+      <View style={{ flex: 1, backgroundColor: theme.bg, padding: space.l, paddingTop: insets.top + space.xxl }}>
+        <Title theme={theme}>Your documents did not open.</Title>
+        <Text style={[type.body, { color: theme.inkSoft, marginTop: space.s }]}>Close the app and open it again. If it keeps happening, write to support from the App Store page. ({data.failed})</Text>
+      </View>
+    );
+  }
 
   if (!onboarded) {
     return (
@@ -66,10 +105,24 @@ function Shell() {
     );
   }
 
+  const top = stack[stack.length - 1];
   let body: React.ReactNode;
-  if (tab === 'settings')
+  if (top?.name === 'doc')
+    body = <Editor key={top.id} id={top.id} onBack={pop} onPreview={(id) => push({ name: 'preview', id })} onSignHere={(id) => push({ name: 'signHere', id })} onOwnerSignature={() => push({ name: 'mySignature' })} onOpen={openDoc} />;
+  else if (top?.name === 'preview') body = <Preview key={top.id} id={top.id} onBack={pop} />;
+  else if (top?.name === 'signHere') body = <SignHere docId={top.id} onBack={pop} />;
+  else if (top?.name === 'mySignature') body = <MySignature onBack={pop} />;
+  else if (top?.name === 'business') body = <Business onBack={pop} />;
+  else if (top?.name === 'client') body = <ClientEditor client={top.client} onBack={pop} onOpenDoc={(id) => push({ name: 'doc', id })} onNewDoc={(c) => newDoc('estimate', c)} />;
+  else if (top?.name === 'item') body = <ItemEditor item={top.item} onBack={pop} />;
+  else if (tab === 'documents') body = <Documents onOpen={(id) => push({ name: 'doc', id })} onNew={(t) => newDoc(t)} />;
+  else if (tab === 'clients') body = <Clients onEdit={(client) => push({ name: 'client', client })} />;
+  else if (tab === 'items') body = <Items onEdit={(item) => push({ name: 'item', item })} />;
+  else
     body = (
       <Settings
+        onBusiness={() => push({ name: 'business' })}
+        onSignature={() => push({ name: 'mySignature' })}
         onReplayOnboarding={() => {
           paywallOpened.current = false;
           setStep('intro');
@@ -77,18 +130,12 @@ function Shell() {
         }}
       />
     );
-  else
-    body = (
-      <View style={{ padding: space.l }}>
-        <Title theme={theme}>Documents</Title>
-      </View>
-    );
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.bg, paddingTop: insets.top }}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       <View style={{ flex: 1 }}>{body}</View>
-      <TabBar theme={theme} tab={tab} onTab={setTab} />
+      {top == null ? <TabBar theme={theme} tab={tab} onTab={setTab} /> : null}
       <Toast theme={theme} text={notice} top={insets.top} />
       <PaywallModal privacyUrl={PRIVACY_URL} />
       <Drawer theme={theme} visible={claim} onClose={() => setClaim(false)}>
@@ -136,7 +183,9 @@ export default function App() {
     <Guard>
       <SafeAreaProvider>
         <AppProvider>
-          <Shell />
+          <DataProvider>
+            <Shell />
+          </DataProvider>
         </AppProvider>
       </SafeAreaProvider>
     </Guard>
