@@ -1,0 +1,66 @@
+{
+  "expo": {
+    "name": "Estimate Maker",
+    "slug": "estimatemaker",
+    "scheme": "estimatemaker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#F4F1EA",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.bwk.estimatemaker",
+      "buildNumber": "1",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "LSApplicationCategoryType": "public.app-category.business"
+      }
+    },
+    "android": {
+      "package": "com.bwk.estimatemaker",
+      "adaptiveIcon": {
+        "backgroundColor": "#1D3A8A",
+        "foregroundImage": "./assets/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-font",
+      "expo-sqlite",
+      "expo-localization",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 120,
+          "resizeMode": "contain",
+          "backgroundColor": "#F4F1EA",
+          "dark": {
+            "image": "./assets/splash-icon-dark.png",
+            "backgroundColor": "#1C1B19"
+          }
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": false,
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
+      "./plugins/withoutPushEntitlement"
+    ],
+    "extra": {
+      "revenueCatApiKeyIos": "TODO_COWORK_REVENUECAT_PUBLIC_IOS_KEY",
+      "eas": {
+        "projectId": "TODO_COWORK_EXPO_PROJECT_ID"
+      }
+    },
+    "owner": "bkdeveloper123"
+  }
+}
