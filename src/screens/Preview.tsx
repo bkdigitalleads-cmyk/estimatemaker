@@ -126,14 +126,14 @@ export default function Preview({ id, onBack, onBusiness }: { id: string; onBack
                 accessibilityState={{ selected: on }}
                 style={[styles.dotWrap, { borderColor: on ? theme.ink : 'transparent' }]}
               >
-                <View style={[styles.dot, { backgroundColor: a.hex, borderColor: theme.edge }]} />
+                <View style={[styles.dot, { backgroundColor: a.hex, borderColor: theme.inkFaint }]} />
               </Tap>
             );
           })}
         </View>
         {failed ? <Text style={[type.body, { color: theme.danger }]}>{failed}</Text> : null}
         {!pages || !kit ? (
-          <View style={[styles.loading, { width: pageW, height: pageW * 1.29, backgroundColor: theme.paper, borderColor: theme.edge }]}>
+          <View style={[styles.loading, { width: pageW, height: pageW * 1.29, backgroundColor: theme.sheet, borderColor: theme.edge }]}>
             <ActivityIndicator color={theme.inkSoft} />
           </View>
         ) : (

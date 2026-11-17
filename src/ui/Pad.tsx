@@ -4,6 +4,9 @@ import { Canvas, Group, Path } from '@shopify/react-native-skia';
 import { RawPoint, Stroke, PenId, SizeStep, strokePath } from '../stroke';
 import { Theme, radius, space, type } from '../theme';
 
+/** Hints on the white pad, in both themes. */
+const SOFT = '#8E887C';
+
 /**
  * The drawing pad: a sheet of paper with a thin signing line and a small
  * cross where the pen starts, and Skia drawing the pen engine's filled
@@ -81,13 +84,13 @@ export default function Pad({
   const lineY = Math.round(height * baseline);
 
   return (
-    <View style={[styles.paper, { width, height, backgroundColor: theme.paper, borderColor: theme.edge }]}>
+    <View style={[styles.paper, { width, height, backgroundColor: theme.sheet, borderColor: theme.edge }]}>
       <View pointerEvents="none" style={[styles.line, { top: lineY, backgroundColor: theme.baseline, left: space.xl, right: space.xl }]} />
-      <Text pointerEvents="none" style={[styles.cross, { top: lineY - 30, left: space.xl, color: theme.paperInkSoft }]} accessible={false}>
+      <Text pointerEvents="none" style={[styles.cross, { top: lineY - 30, left: space.xl, color: SOFT }]} accessible={false}>
         ×
       </Text>
       {empty ? (
-        <Text pointerEvents="none" style={[type.small, styles.hint, { top: lineY + space.s, left: space.xl, color: theme.paperInkSoft }]} accessible={false}>
+        <Text pointerEvents="none" style={[type.small, styles.hint, { top: lineY + space.s, left: space.xl, color: SOFT }]} accessible={false}>
           {placeholder}
         </Text>
       ) : null}

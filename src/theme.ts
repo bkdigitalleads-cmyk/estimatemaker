@@ -1,19 +1,21 @@
 import { useColorScheme } from 'react-native';
 
 /**
- * "A clean desk." Light by default: a warm desk tone around a sheet of
- * paper-white (never pure white), ink-black text, and one accent, a deep
- * blue ink, used only for the primary action on a screen (Save signature,
- * Done signing, Continue). Everything else is ink on paper. The dark
- * theme follows the system; the drawing canvas stays paper in both, since
- * it is the paper the signature is made on.
+ * "The job ticket." A tradesperson's paperwork: a manila clipboard, work
+ * tickets on it, ruled like a ledger, figures stamped by a numbering
+ * machine, rubber stamps for the status. Light by default: manila behind,
+ * paper in front, near-black ink. One accent, tape-measure orange, used
+ * only for the primary action on a screen (New document, Preview and
+ * send, Share PDF, Continue). The dark theme follows the system: the
+ * clipboard goes to night-shift charcoal, the ticket to carbon, and the
+ * documents themselves stay paper white.
  */
 export interface Theme {
-  /** The desk: the screen background. */
+  /** The clipboard: the screen background. */
   bg: string;
-  /** The sheet: the canvas and page backgrounds. Paper in both themes. */
+  /** The ticket: lists, forms, the totals stub. */
   paper: string;
-  /** Cards, grouped rows and sheets. */
+  /** Inputs and quiet buttons on the clipboard. */
   surface: string;
   /** One step up: wells, unselected pills, pressed rows. */
   raised: string;
@@ -24,11 +26,8 @@ export interface Theme {
   rule: string;
   /** The 1 px edge around cards and the sheet. */
   edge: string;
-  /** The canvas's signing line. */
+  /** The signing line on the pad; the ledger's margin rule. */
   baseline: string;
-  /** Ink-on-paper text (on the canvas and pages, whatever the theme). */
-  paperInk: string;
-  paperInkSoft: string;
   /** The primary action. Nothing else uses it. */
   accent: string;
   onAccent: string;
@@ -38,60 +37,57 @@ export interface Theme {
   danger: string;
   /** Paid and accepted stamps. */
   good: string;
-  /** The checkerboard behind a transparent export. */
-  checkA: string;
-  checkB: string;
+  /** The signing pad and the document pages: white paper in both themes. */
+  sheet: string;
+  /** The ledger's margin line. */
+  margin: string;
   scrim: string;
   isDark: boolean;
 }
 
 export const lightTheme: Theme = {
-  bg: '#EFEBE3',
-  paper: '#FBF9F4',
-  surface: '#F8F5EF',
-  raised: '#E6E1D8',
-  ink: '#1A1A1E',
-  inkSoft: '#57554F',
-  inkFaint: '#8C877E',
-  rule: '#DDD7CC',
-  edge: 'rgba(26, 26, 30, 0.09)',
-  baseline: '#C7BFB1',
-  paperInk: '#1A1A1E',
-  paperInkSoft: '#8C877E',
-  accent: '#1D3A8A',
-  onAccent: '#FBF9F4',
-  picked: '#E0DAD0',
-  pickedEdge: '#1A1A1E',
-  danger: '#A3312A',
+  bg: '#EEE8DC',
+  paper: '#FCFAF5',
+  surface: '#F7F3EA',
+  raised: '#E3DCCD',
+  ink: '#1C1B19',
+  inkSoft: '#5B574F',
+  inkFaint: '#8E887C',
+  rule: '#DED7C8',
+  edge: 'rgba(28, 27, 25, 0.12)',
+  baseline: '#C9C0AE',
+  accent: '#C9480B',
+  onAccent: '#FFFFFF',
+  picked: '#1C1B19',
+  pickedEdge: '#1C1B19',
+  danger: '#B3261E',
   good: '#2F6B4A',
-  checkA: '#FFFFFF',
-  checkB: '#E4E1DB',
-  scrim: 'rgba(26, 24, 20, 0.36)',
+  sheet: '#FFFFFF',
+  margin: 'rgba(201, 72, 11, 0.35)',
+  scrim: 'rgba(28, 24, 18, 0.4)',
   isDark: false,
 };
 
 export const darkTheme: Theme = {
-  bg: '#1B1A18',
-  paper: '#EDE9E0',
-  surface: '#24231F',
-  raised: '#2E2C28',
-  ink: '#ECE8E0',
-  inkSoft: '#ABA69C',
-  inkFaint: '#7F7A71',
-  rule: '#35332E',
-  edge: 'rgba(255, 255, 255, 0.07)',
-  baseline: '#BDB5A6',
-  paperInk: '#1A1A1E',
-  paperInkSoft: '#8C877E',
-  accent: '#7393E6',
-  onAccent: '#10162A',
-  picked: '#3A3833',
-  pickedEdge: '#ECE8E0',
-  danger: '#E08B80',
-  good: '#7FC29B',
-  checkA: '#F2F0EC',
-  checkB: '#D6D2CB',
-  scrim: 'rgba(0, 0, 0, 0.5)',
+  bg: '#141311',
+  paper: '#1F1D1A',
+  surface: '#1A1916',
+  raised: '#2C2925',
+  ink: '#EEE9DF',
+  inkSoft: '#ABA59A',
+  inkFaint: '#7C776D',
+  rule: '#34312C',
+  edge: 'rgba(255, 255, 255, 0.09)',
+  baseline: '#C9C0AE',
+  accent: '#F07A3A',
+  onAccent: '#1A0E06',
+  picked: '#EEE9DF',
+  pickedEdge: '#EEE9DF',
+  danger: '#F2867C',
+  good: '#86C9A0',
+  sheet: '#FFFFFF',
+  margin: 'rgba(240, 122, 58, 0.35)',
+  scrim: 'rgba(0, 0, 0, 0.55)',
   isDark: true,
 };
 
@@ -101,47 +97,56 @@ export function useTheme(): Theme {
 }
 
 /**
- * Two corners, on purpose:
- *  - large: the canvas, pages' frames, cards, sheets and the main button
- *  - small: pills, inputs and plain buttons
+ * Two corners, both small, like cut paper and a tag:
+ *  - large (6): sheets, drawers and the main button
+ *  - small (4): inputs, choices, quiet buttons
  * (round is only for circles: glyph buttons, radio dots, color dots.)
  */
-export const radius = { large: 18, small: 10, round: 999 };
+export const radius = { large: 6, small: 4, round: 999 };
 
 /** The spacing scale. Every margin, padding and gap is one of these. */
 export const space = { xs: 4, s: 8, m: 12, l: 16, xl: 24, xxl: 32 };
 
 /**
- * Newsreader (SIL OFL, assets/fonts/OFL-Newsreader.txt), a static
- * Medium instance at the 24 pt optical size, for the screen titles only:
- * a book face for a desk, quiet next to the script signatures. Everything
- * else is the system font, which reads best small and follows Dynamic Type.
+ * IBM Plex (SIL OFL, assets/fonts/OFL-IBMPlex.txt), the same family the
+ * PDFs are set in:
+ *  - Plex Sans Condensed SemiBold for titles, field labels and the main
+ *    button, like the lettering on a work ticket
+ *  - Plex Mono for money and document numbers, like a numbering machine
+ * Everything else is the system font, which reads best small and follows
+ * Dynamic Type.
  */
 export const fonts = {
-  display: 'SM-Newsreader-Medium',
-  serif: 'SM-Newsreader-Regular',
+  display: 'EM-Condensed',
+  mono: 'EM-Mono',
 };
 
 /**
- * One type scale, three sizes:
- *  - title 28: screen titles and onboarding lines (Newsreader)
- *  - body 17: buttons, rows, body text (system; buttons semibold)
- *  - small 13: secondary lines, labels, the tab bar
+ * One type scale:
+ *  - title 30: screen titles and onboarding lines (condensed)
+ *  - body 17: rows, fields, body text (system; strong in semibold)
+ *  - small 13: secondary lines
+ *  - label 12: field labels and section heads, condensed capitals
+ *  - figure 28: the big amounts (mono)
  */
 export const type = {
-  title: { fontFamily: fonts.display, fontSize: 28, lineHeight: 34 },
+  title: { fontFamily: fonts.display, fontSize: 30, lineHeight: 34 },
   body: { fontSize: 17, lineHeight: 23 },
   strong: { fontSize: 17, lineHeight: 23, fontWeight: '600' as const },
   small: { fontSize: 13, lineHeight: 18 },
+  label: { fontFamily: fonts.display, fontSize: 13, lineHeight: 16, letterSpacing: 1.1, textTransform: 'uppercase' as const },
+  figure: { fontFamily: fonts.mono, fontSize: 26, lineHeight: 32 },
+  button: { fontFamily: fonts.display, fontSize: 19, lineHeight: 22, letterSpacing: 0.6, textTransform: 'uppercase' as const },
 };
 
-export const tabular = { fontVariant: ['tabular-nums' as const] };
+/** Money and numbers: Plex Mono, so columns of figures line up. */
+export const tabular = { fontFamily: fonts.mono, fontVariant: ['tabular-nums' as const] };
 
-/** The Save signature button and the other main buttons are at least this tall. */
-export const MAIN_BUTTON = 64;
+/** The main buttons are at least this tall. */
+export const MAIN_BUTTON = 60;
 
-/** UI font files for useFonts in App.tsx (the script fonts are in fontFiles.ts). */
+/** UI font files for useFonts in App.tsx. */
 export const UI_FONT_FILES = {
-  [fonts.display]: require('../assets/fonts/Newsreader-Medium.ttf'),
-  [fonts.serif]: require('../assets/fonts/Newsreader-Regular.ttf'),
+  [fonts.display]: require('../assets/fonts/IBMPlexSansCondensed-SemiBold.ttf'),
+  [fonts.mono]: require('../assets/fonts/IBMPlexMono-Medium.ttf'),
 };

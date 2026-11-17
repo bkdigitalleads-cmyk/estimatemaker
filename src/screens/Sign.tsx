@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { useTheme, space, type, tabular } from '../theme';
+import { useTheme, space, type } from '../theme';
 import { useData } from '../data';
 import { useApp } from '../state';
 import type { Doc } from '../model';
@@ -70,7 +70,7 @@ export function SignHere({ docId, onBack }: { docId: string; onBack: () => void 
             {TYPE_LABEL[doc.type]} {doc.number}
             {doc.client.name ? ` for ${doc.client.name}` : ''}
           </Text>
-          <Text style={[type.title, tabular, { color: theme.ink }]}>{formatMoney(total, doc.currency, data.locale.tag)}</Text>
+          <Text style={[type.figure, { color: theme.ink }]}>{formatMoney(total, doc.currency, data.locale.tag)}</Text>
         </View>
         <Pad theme={theme} width={w} height={h} strokes={strokes} onStroke={(s) => setStrokes([...strokes, s])} pen="ink" size={1} inkHex={INK} placeholder="Sign with a finger" />
         <PadTools strokes={strokes} setStrokes={setStrokes} />

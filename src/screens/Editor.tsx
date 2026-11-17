@@ -19,7 +19,8 @@ type Sheet = null | 'client' | 'issue' | 'due' | 'items' | 'more' | 'number' | {
 
 /**
  * One document, every field on one scrolling page, saved as you go.
- * Preview and send at the bottom, and the one-tap convert beside it.
+ * Send (the PDF preview, then share, mail or print) at the bottom, and the
+ * one-tap convert beside it.
  */
 export default function Editor({
   id,
@@ -232,7 +233,7 @@ export default function Editor({
           <SumLine theme={theme} label="Total" value={money(totals.total)} strong />
           <MoneyRow theme={theme} label={paidLabel(doc.type)} value={doc.paid} onValue={(paid) => edit({ paid })} currency={doc.currency} locale={locale.tag} />
           {doc.type === 'receipt' ? <InputRow theme={theme} label="Paid by" value={doc.paymentNote} onChangeText={(paymentNote) => edit({ paymentNote })} placeholder="Card, cash, check 1042" /> : null}
-          {doc.type !== 'receipt' || totals.balance !== 0 ? <SumLine theme={theme} label={totals.balance < 0 ? 'Credit' : 'Balance due'} value={money(Math.abs(totals.balance))} strong /> : null}
+          {doc.type !== 'receipt' || totals.balance !== 0 ? <SumLine theme={theme} label={totals.balance < 0 ? 'Credit' : 'Balance due'} value={money(Math.abs(totals.balance))} strong double /> : null}
         </Section>
 
         <Section theme={theme} label="Notes and terms">
@@ -260,8 +261,8 @@ export default function Editor({
           )}
           {doc.clientSigned ? (
             <View style={[styles.signed, { borderTopColor: theme.rule }]}>
-              <View style={[styles.signedPaper, { backgroundColor: theme.paper, borderColor: theme.edge }]}>
-                <InkView strokes={doc.clientSigned.strokes} width={140} height={52} color={theme.paperInk} />
+              <View style={[styles.signedPaper, { backgroundColor: theme.sheet, borderColor: theme.edge }]}>
+                <InkView strokes={doc.clientSigned.strokes} width={140} height={52} color="#1A1A1E" />
               </View>
               <View style={{ flex: 1 }}>
                 <Text style={[type.body, { color: theme.ink }]} numberOfLines={1}>
@@ -298,11 +299,17 @@ export default function Editor({
       </ScrollView>
 
       <View style={[styles.bottom, { borderTopColor: theme.edge, backgroundColor: theme.bg }]}>
-        {target ? <QuietButton theme={theme} glyph="convert" label={`Make ${TYPE_LABEL[target].toLowerCase()}`} onPress={convert} hint={`Makes a new ${TYPE_LABEL[target].toLowerCase()} with every line`} /> : null}
+        {target ? (
+          <View style={{ flex: 1 }}>
+            <QuietButton theme={theme} glyph="convert" label={`Make ${TYPE_LABEL[target].toLowerCase()}`} onPress={convert} hint={`Makes a new ${TYPE_LABEL[target].toLowerCase()} with every line`} />
+          </View>
+        ) : null}
         <View style={{ flex: 1 }}>
           <InkButton
             theme={theme}
-            label="Preview and send"
+            glyph="share"
+            label="Send"
+            hint="Shows the PDF, then share, mail or print it"
             onPress={async () => {
               await flush();
               onPreview(doc.id);
@@ -413,9 +420,11 @@ export default function Editor({
   );
 }
 
-function SumLine({ theme, label, value, strong = false }: { theme: Theme; label: string; value: string; strong?: boolean }) {
+/** A line of the totals. The total gets a rule in ink above it; the balance due gets a double rule, as a bookkeeper would. */
+function SumLine({ theme, label, value, strong = false, double = false }: { theme: Theme; label: string; value: string; strong?: boolean; double?: boolean }) {
   return (
-    <View style={[styles.sumRow, { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.rule }]} accessible accessibilityLabel={`${label}, ${value}`}>
+    <View style={[styles.sumRow, { borderTopWidth: strong ? 1 : StyleSheet.hairlineWidth, borderTopColor: strong ? theme.ink : theme.rule }]} accessible accessibilityLabel={`${label}, ${value}`}>
+      {double ? <View style={[styles.double, { backgroundColor: theme.ink }]} /> : null}
       <Text style={[strong ? type.strong : type.body, { color: strong ? theme.ink : theme.inkSoft, flex: 1 }]}>{label}</Text>
       <Text style={[strong ? type.strong : type.body, tabular, { color: theme.ink }]}>{value}</Text>
     </View>
@@ -452,7 +461,7 @@ function LineEditor({
       <Field theme={theme} value={l.description} onChangeText={(description) => setL({ ...l, description })} placeholder="Describe the work or the part" multiline autoFocus={isNew} accessibilityLabel="Description" style={{ minHeight: 72, paddingTop: space.m }} />
       <Panel theme={theme}>
         <NumberRow theme={theme} first label="Quantity" value={l.qty} onValue={(qty) => setL({ ...l, qty })} locale={locale} />
-        <InputRow theme={theme} label="Unit" value={l.unit} onChangeText={(unit) => setL({ ...l, unit })} placeholder="hr, ea, sq ft" autoCapitalize="none" />
+        <InputRow theme={theme} label="Unit" value={l.unit} onChangeText={(unit) => setL({ ...l, unit })} placeholder="hr, ea, sq ft" autoCapitalize="none" style={{ textAlign: 'right' }} />
         <MoneyRow theme={theme} label="Rate" value={l.rate} onValue={(rate) => setL({ ...l, rate })} currency={currency} locale={locale} />
         {taxLabel ? <SwitchRow theme={theme} label={`Charge ${taxLabel.toLowerCase()}`} value={l.taxable} onValue={(taxable) => setL({ ...l, taxable })} /> : null}
         {isNew ? <SwitchRow theme={theme} label="Save to my items" sub="Use it again on the next job" value={save} onValue={setSave} /> : null}
@@ -461,9 +470,9 @@ function LineEditor({
       <InkButton theme={theme} label={isNew ? 'Add line' : 'Done'} onPress={() => onDone(l, save)} />
       {!isNew ? (
         <View style={styles.lineButtons}>
-          {canMove.up ? <QuietButton theme={theme} grow glyph="up" label="Move up" onPress={() => onMove(-1)} /> : null}
-          {canMove.down ? <QuietButton theme={theme} grow glyph="down" label="Move down" onPress={() => onMove(1)} /> : null}
-          <QuietButton theme={theme} grow glyph="trash" tone="danger" label="Remove" onPress={onDelete} />
+          <GlyphButton theme={theme} filled size={48} glyph="up" label="Move this line up" disabled={!canMove.up} onPress={() => onMove(-1)} />
+          <GlyphButton theme={theme} filled size={48} glyph="down" label="Move this line down" disabled={!canMove.down} onPress={() => onMove(1)} />
+          <QuietButton theme={theme} grow glyph="trash" tone="danger" label="Remove line" onPress={onDelete} />
         </View>
       ) : null}
     </View>
@@ -516,6 +525,7 @@ const styles = StyleSheet.create({
   line: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 60, paddingHorizontal: space.l, paddingVertical: space.m },
   lineButtons: { flexDirection: 'row', gap: space.s, marginTop: space.s },
   sumRow: { flexDirection: 'row', alignItems: 'center', minHeight: 48, paddingHorizontal: space.l },
+  double: { position: 'absolute', top: 2, left: 0, right: 0, height: 1 },
   discount: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, paddingHorizontal: space.l, borderTopWidth: StyleSheet.hairlineWidth },
   signed: { flexDirection: 'row', alignItems: 'center', gap: space.m, padding: space.m, borderTopWidth: StyleSheet.hairlineWidth },
   signedPaper: { borderWidth: 1, borderRadius: radius.small, padding: space.xs },

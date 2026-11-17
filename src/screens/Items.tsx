@@ -28,9 +28,10 @@ export default function Items({ onEdit }: { onEdit: (it: Item | null) => void })
         </View>
       }
       renderItem={({ item, index }) => (
+        <View style={{ backgroundColor: theme.paper, borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: theme.rule }}>
         <Row
           theme={theme}
-          first={index === 0}
+          first
           label={item.description || 'No description'}
           onPress={() => onEdit(item)}
           right={
@@ -40,6 +41,7 @@ export default function Items({ onEdit }: { onEdit: (it: Item | null) => void })
             </Text>
           }
         />
+        </View>
       )}
       ListEmptyComponent={<Text style={[type.body, styles.empty, { color: theme.inkSoft }]}>{items.length ? 'Nothing matches.' : 'Save your usual work and parts with their prices, and add them to any document in one tap.'}</Text>}
     />

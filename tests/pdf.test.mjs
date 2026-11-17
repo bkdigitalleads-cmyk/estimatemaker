@@ -31,7 +31,7 @@ const texts = (pages) => pages.flatMap((p) => p.ops.filter((o) => o.k === 'text'
 test('fonts: four IBM Plex files under the SIL OFL, with the licence; every currency symbol in the picker draws', async () => {
   for (const f of Object.values(FO.FONT_FILES)) assert.ok(existsSync(`${ROOT}assets/fonts/${f}`), f);
   assert.match(readFileSync(`${ROOT}assets/fonts/OFL-IBMPlex.txt`, 'utf8'), /SIL Open Font License/);
-  for (const f of readdirSync(`${ROOT}assets/fonts`).filter((x) => x.endsWith('.ttf'))) assert.ok(/^(IBMPlex|Newsreader)/.test(f), `unlicensed font ${f}`);
+  for (const f of readdirSync(`${ROOT}assets/fonts`).filter((x) => x.endsWith('.ttf'))) assert.ok(/^IBMPlex/.test(f), `unlicensed font ${f}`);
   const { CURRENCIES, formatMoney } = await import('../src/format.ts');
   for (const c of CURRENCIES) {
     const s = formatMoney(123456, c.code, 'en-US');

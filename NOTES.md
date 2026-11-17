@@ -2,6 +2,14 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-17: 1.0.0 build 1, step 6 of 7: design pass.
+  - New look, "the job ticket" (docs/design/NOTES.md): manila background, paper tickets, near-black ink, tape-measure orange (#C9480B; #F07A38 in dark) on the main button only. Type is IBM Plex, the PDFs' family: Plex Sans Condensed SemiBold for titles, field labels in capitals with a rule and the main button's lettering; Plex Mono for every amount and number. Newsreader and its licence are gone.
+  - The home numbers sit on a ticket stub with a perforation and a torn edge; documents, clients and items are ruled ledger lines with a margin rule (type and date in the margin, a rubber stamp for the status); totals end with a rule over the total and a double rule over the balance due; small corners; outlined quiet buttons; picked choices and switches in ink.
+  - Fixes found in the "before" renders: number fields running off the row, "Preview and send" not fitting (now Send, which still opens the preview first), the line sheet's cut-off buttons, the graphite color dot lost in dark, the paywall's picked plan going dark under the new tokens, the onboarding receipt cropped through the name.
+  - Icon: four concepts at 60 px on light and dark wallpapers in docs/design/icon-options.png (store/icon.js); "ticket" chosen and written to assets/ (icon, splash, favicon, Android foreground). app.json and the startup screens use the new background colors.
+  - Renders: docs/design/before (end of step 5) and docs/design/after, 26 screens each in light and dark, 393x852 points at 2x, from a throwaway react-native-web copy of the app (described in docs/design/NOTES.md, not in the repo).
+  - Checked: `npx tsc --noEmit` clean, `npm test` 51 passing (new: one accent on the main button only, contrast of the button lettering, ink and soft ink in both themes, UI fonts are the bundled Plex), every render looked at.
+
 - 2026-11-17: 1.0.0 build 1, step 5 of 7: onboarding and paywall.
   - First launch: four screens that show the product, each a real render, not instructions: the top of an estimate drawn by the PDF layout ("Estimates that look like your business."), the list's own rows with an accepted estimate and its new invoice ("Turn a yes into an invoice."), a client's signature drawing itself in over the total with the pen engine ("Get it signed on the spot."), and a receipt's totals with the PAID stamp ("Paid. Send the receipt."). Sample content is a made-up one-person carpentry business (src/sampleDoc.ts).
   - Then "Make your first estimate.": the business name, one line of work and its price, then "See the estimate" shows that estimate as its PDF page, before any paywall. It is saved as a draft and the name goes into the business profile. Skip for now is there.

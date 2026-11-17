@@ -174,7 +174,7 @@ export default function PaywallModal({ privacyUrl, onboarding = false, hero }: {
                   <Tap
                     key={p.identifier}
                     onPress={() => setSelected(p)}
-                    style={[styles.plan, compact && styles.planCompact, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.rule }, on && { backgroundColor: theme.picked }]}
+                    style={[styles.plan, compact && styles.planCompact, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: theme.rule }, on && { backgroundColor: theme.raised }]}
                     pressedStyle={{ backgroundColor: theme.raised }}
                     accessibilityRole="radio"
                     accessibilityState={{ selected: on }}
@@ -183,7 +183,7 @@ export default function PaywallModal({ privacyUrl, onboarding = false, hero }: {
                     <Radio theme={theme} on={on} />
                     <View style={{ flex: 1 }}>
                       <Text style={[type.strong, { color: theme.ink }]}>{title}</Text>
-                      <Text style={[type.small, { color: theme.inkSoft }, tabular]}>{line}</Text>
+                      <Text style={[type.small, { color: theme.inkSoft }]}>{line}</Text>
                     </View>
                     <Text style={[type.strong, { color: theme.ink }, tabular]}>{p.product.priceString}</Text>
                   </Tap>

@@ -5,7 +5,7 @@
  */
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Theme, radius, space, tabular, type } from '../theme';
+import { Theme, radius, space, type } from '../theme';
 import { pagesFor, pdfKit, PdfKit } from '../pdfAssets';
 import { SAMPLE_BUSINESS, sampleDoc } from '../sampleDoc';
 import { SAMPLE_SIGNATURE } from '../sample';
@@ -82,9 +82,9 @@ export function SignShow({ theme, width }: { theme: Theme; width: number }) {
     <View style={{ width, gap: space.m }}>
       <View>
         <Text style={[type.small, { color: theme.inkSoft }]}>Estimate EST-0042 for Dana Ruiz</Text>
-        <Text style={[type.title, tabular, { color: theme.ink }]}>{formatMoney(total, 'USD', 'en-US')}</Text>
+        <Text style={[type.figure, { color: theme.ink }]}>{formatMoney(total, 'USD', 'en-US')}</Text>
       </View>
-      <View style={[styles.pad, { width, height: h, backgroundColor: theme.paper, borderColor: theme.edge }]}>
+      <View style={[styles.pad, { width, height: h, backgroundColor: theme.sheet, borderColor: theme.edge }]}>
         <View style={[styles.line, { top: h * 0.72, backgroundColor: theme.baseline }]} />
         <PlayInk strokes={SAMPLE_SIGNATURE} width={width} height={h} color="#1A1A1E" margin={24} />
       </View>
@@ -94,7 +94,7 @@ export function SignShow({ theme, width }: { theme: Theme; width: number }) {
 
 /** 4: a receipt's totals with the PAID stamp. */
 export function ReceiptShow({ theme, width, height }: { theme: Theme; width: number; height: number }) {
-  return <PageWindow theme={theme} doc={sampleDoc('receipt', { notes: '', lines: sampleDoc('receipt').lines.slice(0, 2) })} width={width} height={height} zoom={1.25} top={0.17} left={0.12} accent={ACCENTS[2].hex} label="A receipt with the amount paid and a paid stamp" />;
+  return <PageWindow theme={theme} doc={sampleDoc('receipt', { notes: '', lines: sampleDoc('receipt').lines.slice(0, 2) })} width={width} height={height} zoom={1.1} top={0.16} left={0} accent={ACCENTS[2].hex} label="A receipt with the amount paid and a paid stamp" />;
 }
 
 const styles = StyleSheet.create({

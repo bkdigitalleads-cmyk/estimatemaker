@@ -15,7 +15,7 @@ function StartupFailure({ error }: { error: unknown }) {
   const stack = (e?.stack ?? '').split('\n').slice(0, 12).join('\n');
   return React.createElement(
     ScrollView,
-    { style: { flex: 1, backgroundColor: '#F4F1EA' }, contentContainerStyle: { padding: 24, paddingTop: 80 } },
+    { style: { flex: 1, backgroundColor: '#EEE8DC' }, contentContainerStyle: { padding: 24, paddingTop: 80 } },
     React.createElement(Text, { style: { fontSize: 20, fontWeight: '600', color: '#1A1917', marginBottom: 12 } }, 'Estimate Maker could not start.'),
     React.createElement(Text, { style: { fontSize: 15, color: '#1A1917', marginBottom: 16 } }, 'Please delete the app and install it again. If it keeps happening, send this screen to support.'),
     React.createElement(Text, { style: { fontSize: 13, color: '#5B5851', fontFamily: 'Menlo' } }, message),

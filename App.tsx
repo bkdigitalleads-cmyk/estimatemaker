@@ -184,7 +184,7 @@ class Guard extends React.Component<{ children: React.ReactNode }, { error: Erro
     const { error } = this.state;
     if (!error) return this.props.children;
     return (
-      <View style={{ flex: 1, backgroundColor: '#F4F1EA', padding: space.l, paddingTop: 80 }}>
+      <View style={{ flex: 1, backgroundColor: '#EEE8DC', padding: space.l, paddingTop: 80 }}>
         <Text style={[type.title, { color: '#1A1917' }]}>Something went wrong on this screen.</Text>
         <Text style={[type.body, { color: '#1A1917', marginTop: space.s }]}>Close the app and open it again. Your documents are saved.</Text>
         <Text style={{ fontSize: 12, color: '#8A867F', marginTop: space.l }}>{error.message}</Text>

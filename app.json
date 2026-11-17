@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#F4F1EA",
+    "backgroundColor": "#EEE8DC",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.bwk.estimatemaker",
@@ -20,7 +20,7 @@
     "android": {
       "package": "com.bwk.estimatemaker",
       "adaptiveIcon": {
-        "backgroundColor": "#1D3A8A",
+        "backgroundColor": "#D9531E",
         "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
@@ -38,10 +38,10 @@
           "image": "./assets/splash-icon.png",
           "imageWidth": 120,
           "resizeMode": "contain",
-          "backgroundColor": "#F4F1EA",
+          "backgroundColor": "#EEE8DC",
           "dark": {
             "image": "./assets/splash-icon-dark.png",
-            "backgroundColor": "#1C1B19"
+            "backgroundColor": "#141311"
           }
         }
       ],

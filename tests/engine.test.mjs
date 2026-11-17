@@ -232,3 +232,32 @@ test('onboarding: four product screens, then the first estimate with its PDF pre
   assert.match(pay, /p\.product\.priceString/, 'prices come from the store');
   assert.ok(!/\$\d/.test(pay.replace(/\$\{/g, '')), 'no price typed into the paywall');
 });
+
+// ---------- design rules ----------
+
+test('design: one accent, on the main button only; its lettering readable in both themes; UI fonts are the bundled Plex', () => {
+  const uses = walk(`${ROOT}src`, ['.tsx']).concat([`${ROOT}App.tsx`]).flatMap((f) => (readFileSync(f, 'utf8').match(/theme\.accent\b(?!\s*}?\s*\/>)/g) ?? []).map(() => f));
+  const theme = readFileSync(`${ROOT}src/theme.ts`, 'utf8');
+  for (const f of new Set(uses)) {
+    const lines = readFileSync(f, 'utf8').split('\n').filter((l) => /theme\.accent\b/.test(l) && !/selectionColor/.test(l));
+    for (const l of lines) assert.ok(f.endsWith('ui/Kit.tsx') && /styles\.ink/.test(l), `accent used outside the main button: ${f}: ${l.trim()}`);
+  }
+  const hex = (name, block) => block.match(new RegExp(`${name}: '(#[0-9A-F]{6})'`, 'i'))[1];
+  const lum = (h) => {
+    const c = [1, 3, 5].map((i) => parseInt(h.slice(i, i + 2), 16) / 255).map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contrast = (a, b) => {
+    const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m);
+    return (x + 0.05) / (y + 0.05);
+  };
+  for (const name of ['lightTheme', 'darkTheme']) {
+    const block = theme.slice(theme.indexOf(`export const ${name}`)).split('};')[0];
+    assert.ok(contrast(hex('accent', block), hex('onAccent', block)) >= 4.5, `${name}: button lettering`);
+    assert.ok(contrast(hex('ink', block), hex('paper', block)) >= 7, `${name}: ink on paper`);
+    assert.ok(contrast(hex('inkSoft', block), hex('paper', block)) >= 4.5, `${name}: soft ink on paper`);
+  }
+  assert.match(theme, /IBMPlexSansCondensed-SemiBold\.ttf/);
+  assert.match(theme, /IBMPlexMono-Medium\.ttf/);
+  assert.ok(!/Newsreader/.test(theme));
+});

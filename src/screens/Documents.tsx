@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
+import { FlatList, StyleSheet, Text, TextInput, useWindowDimensions, View } from 'react-native';
 import { useTheme, radius, space, tabular, type, Theme } from '../theme';
 import { useData } from '../data';
 import { formatDate, formatMoney, monthName } from '../format';
@@ -9,6 +9,7 @@ import { isoDay } from '../dates';
 import Glyph from '../ui/Glyph';
 import { Caption, Drawer, InkButton, Row, Tap, Title } from '../ui/Kit';
 import { Choice, Stamp } from '../ui/Form';
+import { Perforation, TornEdge } from '../ui/Paper';
 
 /**
  * Home: the month's numbers, a new-document button, search, filters and
@@ -29,6 +30,7 @@ export default function Documents({ onOpen, onNew }: { onOpen: (id: string) => v
       .filter(([c, v]) => c !== main && v !== 0)
       .map(([c, v]) => formatMoney(v, c, locale.tag))
       .join(', ');
+  const { width } = useWindowDimensions();
   const narrowed = filter.status != null || filter.clientId != null;
   const clientName = clients.find((c) => c.id === filter.clientId)?.name;
 
@@ -39,19 +41,22 @@ export default function Documents({ onOpen, onNew }: { onOpen: (id: string) => v
           {business.name || 'Documents'}
         </Title>
       </View>
-      <View style={[styles.totals, { borderColor: theme.edge, backgroundColor: theme.paper }]}>
-        <Figure theme={theme} label={`Billed in ${monthName(today, locale.tag)}`} value={formatMoney(sum.month[main] ?? 0, main, locale.tag)} extra={others(sum.month)} />
-        <View style={[styles.split, { backgroundColor: theme.rule }]} />
-        <Figure
-          theme={theme}
-          label={sum.overdueCount > 0 ? `Unpaid, ${sum.overdueCount} overdue` : 'Unpaid'}
-          value={formatMoney(sum.unpaid[main] ?? 0, main, locale.tag)}
-          extra={others(sum.unpaid)}
-          alert={sum.overdueCount > 0}
-        />
+      <View>
+        <View style={[styles.totals, { backgroundColor: theme.paper }]}>
+          <Figure theme={theme} label={`Billed in ${monthName(today, locale.tag)}`} value={formatMoney(sum.month[main] ?? 0, main, locale.tag)} extra={others(sum.month)} />
+          <Perforation height={64} color={theme.inkFaint} />
+          <Figure
+            theme={theme}
+            label={sum.overdueCount > 0 ? `Unpaid, ${sum.overdueCount} overdue` : 'Unpaid'}
+            value={formatMoney(sum.unpaid[main] ?? 0, main, locale.tag)}
+            extra={others(sum.unpaid)}
+            alert={sum.overdueCount > 0}
+          />
+        </View>
+        <TornEdge width={width - space.l * 2} color={theme.paper} />
       </View>
       <InkButton theme={theme} label="New document" glyph="plus" onPress={() => setPicking(true)} />
-      <View style={[styles.search, { backgroundColor: theme.surface, borderColor: theme.edge }]}>
+      <View style={[styles.search, { backgroundColor: theme.paper, borderColor: theme.inkFaint }]}>
         <Glyph name="search" size={20} color={theme.inkFaint} />
         <TextInput
           value={filter.query}
@@ -136,14 +141,14 @@ export default function Documents({ onOpen, onNew }: { onOpen: (id: string) => v
 function Figure({ theme, label, value, extra, alert = false }: { theme: Theme; label: string; value: string; extra?: string; alert?: boolean }) {
   return (
     <View style={styles.figure} accessible accessibilityLabel={`${label}: ${value}${extra ? `, and ${extra}` : ''}`}>
-      <Text style={[type.small, { color: alert ? theme.danger : theme.paperInkSoft }]} numberOfLines={1}>
+      <Text style={[type.label, { color: alert ? theme.danger : theme.inkSoft }]} numberOfLines={1} maxFontSizeMultiplier={1.3}>
         {label}
       </Text>
-      <Text style={[styles.figureValue, tabular, { color: theme.paperInk }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
+      <Text style={[type.figure, { color: theme.ink }]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.6}>
         {value}
       </Text>
       {extra ? (
-        <Text style={[type.small, { color: theme.paperInkSoft }]} numberOfLines={1}>
+        <Text style={[type.small, { color: theme.inkSoft }]} numberOfLines={1}>
           + {extra}
         </Text>
       ) : null}
@@ -151,41 +156,54 @@ function Figure({ theme, label, value, extra, alert = false }: { theme: Theme; l
   );
 }
 
+/** One document as a line in the ledger: the type and date in the margin, the client and number, the amount and the stamp. */
 export function DocLine({ theme, row, first, today, locale, onPress }: { theme: Theme; row: DocRow; first: boolean; today: string; locale: string; onPress: () => void }) {
   const overdue = isOverdue(row, today);
+  const day = formatDate(row.issueDate, locale).replace(/,?\s*\d{4}$/, '');
   return (
     <Tap
       onPress={onPress}
-      style={[styles.line, { borderColor: theme.rule }, first && { borderTopWidth: StyleSheet.hairlineWidth }]}
+      style={[styles.line, { backgroundColor: theme.paper, borderColor: theme.rule }, first && { borderTopWidth: StyleSheet.hairlineWidth }]}
       pressedStyle={{ backgroundColor: theme.raised }}
       accessibilityRole="button"
       accessibilityLabel={`${TYPE_LABEL[row.type]} ${row.number}, ${row.clientName || 'no client'}, ${formatMoney(row.total, row.currency, locale)}, ${overdue ? 'overdue' : STATUS_LABEL[row.status]}`}
     >
-      <View style={{ flex: 1, gap: 2 }}>
-        <Text style={[type.small, tabular, { color: theme.inkSoft }]} numberOfLines={1}>
-          {TYPE_LABEL[row.type]} {row.number} · {formatDate(row.issueDate, locale)}
+      <View style={styles.marginCol}>
+        <Text style={[type.label, { color: theme.ink }]} maxFontSizeMultiplier={1.2}>
+          {CODE[row.type]}
         </Text>
+        <Text style={[type.small, { color: theme.inkSoft }]} numberOfLines={1} maxFontSizeMultiplier={1.2}>
+          {day}
+        </Text>
+      </View>
+      <View style={[styles.marginRule, { backgroundColor: theme.margin }]} />
+      <View style={{ flex: 1, gap: 2 }}>
         <Text style={[type.body, { color: row.clientName ? theme.ink : theme.inkFaint }]} numberOfLines={1}>
           {row.clientName || 'No client yet'}
         </Text>
+        <Text style={[type.small, tabular, { color: theme.inkSoft }]} numberOfLines={1}>
+          {row.number}
+        </Text>
       </View>
       <View style={{ alignItems: 'flex-end', gap: space.xs }}>
-        <Text style={[type.strong, tabular, { color: theme.ink }]}>{formatMoney(row.total, row.currency, locale)}</Text>
+        <Text style={[type.body, tabular, { color: theme.ink }]}>{formatMoney(row.total, row.currency, locale)}</Text>
         <Stamp theme={theme} status={row.status} overdue={overdue} />
       </View>
     </Tap>
   );
 }
 
+const CODE: Record<DocType, string> = { estimate: 'Est', quote: 'Quote', invoice: 'Inv', receipt: 'Rec' };
+
 const styles = StyleSheet.create({
   head: { padding: space.l, gap: space.l },
   titleRow: { flexDirection: 'row', alignItems: 'center' },
-  totals: { flexDirection: 'row', borderWidth: 1, borderRadius: radius.large, paddingVertical: space.l },
-  split: { width: StyleSheet.hairlineWidth, marginVertical: space.xs },
+  totals: { flexDirection: 'row', alignItems: 'center', borderTopLeftRadius: radius.small, borderTopRightRadius: radius.small, paddingTop: space.l, paddingBottom: space.m },
   figure: { flex: 1, paddingHorizontal: space.l, gap: space.xs },
-  figureValue: { fontSize: 28, lineHeight: 34, fontWeight: '600' },
-  search: { flexDirection: 'row', alignItems: 'center', gap: space.s, borderWidth: 1, borderRadius: radius.small, paddingLeft: space.m },
+  search: { flexDirection: 'row', alignItems: 'center', gap: space.s, borderWidth: 1.5, borderRadius: radius.small, paddingLeft: space.m },
   filterBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  line: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingHorizontal: space.l, paddingVertical: space.m, borderBottomWidth: StyleSheet.hairlineWidth, minHeight: 64 },
+  line: { flexDirection: 'row', alignItems: 'center', gap: space.m, paddingRight: space.l, paddingVertical: space.m, borderBottomWidth: StyleSheet.hairlineWidth, minHeight: 68 },
+  marginCol: { width: 64, paddingLeft: space.l, gap: 2 },
+  marginRule: { position: 'absolute', left: 72, top: 0, bottom: 0, width: 1 },
   empty: { padding: space.xxl },
 });

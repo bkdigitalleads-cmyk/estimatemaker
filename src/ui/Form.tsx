@@ -117,7 +117,7 @@ export function SwitchRow({ theme, label, sub, value, onValue, first }: { theme:
         <Text style={[type.body, { color: theme.ink }]}>{label}</Text>
         {sub ? <Text style={[type.small, { color: theme.inkSoft }]}>{sub}</Text> : null}
       </View>
-      <Switch value={value} onValueChange={onValue} accessibilityLabel={label} trackColor={{ true: theme.accent, false: theme.raised }} />
+      <Switch value={value} onValueChange={onValue} accessibilityLabel={label} trackColor={{ true: theme.ink, false: theme.raised }} thumbColor={theme.isDark ? theme.bg : '#FFFFFF'} />
     </View>
   );
 }
@@ -138,10 +138,10 @@ export function Choice<T extends string | number>({ theme, options, value, onCha
             accessibilityRole="radio"
             accessibilityState={{ selected: on }}
             accessibilityLabel={o.label}
-            style={[styles.choiceItem, { backgroundColor: on ? theme.picked : theme.surface, borderColor: on ? theme.pickedEdge : theme.edge }]}
+            style={[styles.choiceItem, { backgroundColor: on ? theme.picked : 'transparent', borderColor: on ? theme.pickedEdge : theme.inkFaint }]}
             pressedStyle={{ backgroundColor: theme.raised }}
           >
-            <Text style={[type.small, { color: theme.ink, fontWeight: on ? '600' : '400' }]} numberOfLines={1} maxFontSizeMultiplier={1.4}>
+            <Text style={[type.small, { color: on ? theme.bg : theme.ink, fontWeight: '600' }]} numberOfLines={1} maxFontSizeMultiplier={1.4}>
               {o.label}
             </Text>
           </Tap>
@@ -212,8 +212,8 @@ export function DateSheet({
       {quick?.length ? (
         <View style={[styles.choice, { marginBottom: space.m }]}>
           {quick.map((q) => (
-            <Tap key={q.label} onPress={() => onPick(q.iso)} style={[styles.choiceItem, { backgroundColor: q.iso === value ? theme.picked : theme.surface, borderColor: q.iso === value ? theme.pickedEdge : theme.edge }]} accessibilityRole="button" accessibilityLabel={q.label}>
-              <Text style={[type.small, { color: theme.ink }]}>{q.label}</Text>
+            <Tap key={q.label} onPress={() => onPick(q.iso)} style={[styles.choiceItem, { backgroundColor: q.iso === value ? theme.picked : 'transparent', borderColor: q.iso === value ? theme.pickedEdge : theme.inkFaint }]} accessibilityRole="button" accessibilityLabel={q.label}>
+              <Text style={[type.small, { color: q.iso === value ? theme.bg : theme.ink, fontWeight: '600' }]}>{q.label}</Text>
             </Tap>
           ))}
         </View>
@@ -268,13 +268,13 @@ export function ValueRow({ theme, label, value, onPress, first, placeholder, gly
 
 const styles = StyleSheet.create({
   inputRow: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l },
-  inputLabel: { minWidth: 96 },
-  input: { flex: 1, minHeight: 52, paddingVertical: space.s },
+  inputLabel: { minWidth: 96, flexShrink: 0 },
+  input: { flex: 1, minWidth: 0, minHeight: 52, paddingVertical: space.s },
   right: { textAlign: 'right' },
   stack: { paddingHorizontal: space.l, paddingTop: space.m, paddingBottom: space.s },
   multi: { minHeight: 72, paddingTop: space.xs, textAlignVertical: 'top' },
   choice: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s },
-  choiceItem: { minHeight: 40, borderRadius: radius.small, borderWidth: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.m },
+  choiceItem: { minHeight: 40, borderRadius: radius.small, borderWidth: 1.5, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.m },
   stamp: { borderWidth: 1.5, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2, transform: [{ rotate: '-3deg' }] },
   stampText: { fontSize: 11, lineHeight: 14, fontWeight: '700', letterSpacing: 1 },
   monthHead: { flexDirection: 'row', alignItems: 'center' },

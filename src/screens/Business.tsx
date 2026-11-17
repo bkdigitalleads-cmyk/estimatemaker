@@ -38,11 +38,11 @@ export default function Business({ onBack }: { onBack: () => void }) {
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
         <Text style={[type.body, { color: theme.inkSoft }]}>Printed at the top of every estimate, quote, invoice and receipt.</Text>
         <View style={styles.logoRow}>
-          <View style={[styles.logoBox, { backgroundColor: theme.paper, borderColor: theme.edge }]}>
+          <View style={[styles.logoBox, { backgroundColor: theme.sheet, borderColor: theme.edge }]}>
             {data.logo ? (
               <Image source={{ uri: `data:image/png;base64,${data.logo.base64}` }} style={styles.logo} resizeMode="contain" accessibilityLabel="Your logo" />
             ) : (
-              <Text style={[type.small, { color: theme.paperInkSoft, textAlign: 'center' }]}>No logo</Text>
+              <Text style={[type.small, { color: '#8E887C', textAlign: 'center' }]}>No logo</Text>
             )}
           </View>
           <View style={{ flex: 1, gap: space.s }}>

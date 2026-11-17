@@ -1,9 +1,10 @@
 /**
- * The component kit ("a clean desk"). Everything tappable goes through
+ * The component kit ("the job ticket"). Everything tappable goes through
  * Tap, so it shows a pressed state; targets are at least 44 points. One
- * accent, on InkButton only. Two corners: radius.large for the canvas,
- * Panels, Drawers and InkButton; radius.small for Pills, inputs and
- * QuietButton. One type scale: 28 (Title), 17 (body), 13 (Caption).
+ * accent, tape-measure orange, on InkButton only, lettered in condensed
+ * capitals. Sheets are paper with a 1 px edge and small corners, labels
+ * are condensed capitals with a rule running out to the edge, like the
+ * printed fields of a work ticket.
  */
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, Animated, KeyboardAvoidingView, Modal, Pressable, ScrollView, PressableProps, StyleProp, StyleSheet, Text, TextInput, TextInputProps, View, ViewStyle } from 'react-native';
@@ -60,7 +61,7 @@ export function InkButton({
       ) : (
         <View style={styles.row}>
           {glyph ? <Glyph name={glyph} size={22} color={theme.onAccent} weight={2} /> : null}
-          <Text style={[type.strong, { color: theme.onAccent }]} maxFontSizeMultiplier={1.4} numberOfLines={1}>
+          <Text style={[type.button, { color: theme.onAccent }]} maxFontSizeMultiplier={1.3} numberOfLines={1}>
             {label}
           </Text>
         </View>
@@ -98,11 +99,11 @@ export function QuietButton({
       accessibilityLabel={label}
       accessibilityHint={hint}
       accessibilityState={{ disabled }}
-      style={[styles.quiet, grow && { flex: 1 }, { backgroundColor: theme.surface, borderColor: theme.edge, opacity: disabled ? 0.4 : 1 }]}
+      style={[styles.quiet, grow && { flex: 1 }, { backgroundColor: theme.surface, borderColor: tone === 'danger' ? theme.danger : theme.inkFaint, opacity: disabled ? 0.4 : 1 }]}
       pressedStyle={{ backgroundColor: theme.raised }}
     >
       {glyph ? <Glyph name={glyph} size={20} color={color} /> : null}
-      <Text style={[type.body, { color, fontWeight: '500' }]} maxFontSizeMultiplier={1.5} numberOfLines={1}>
+      <Text style={[type.body, { color, fontWeight: '600' }]} maxFontSizeMultiplier={1.5} numberOfLines={1}>
         {label}
       </Text>
     </Tap>
@@ -167,11 +168,11 @@ export function Pill({
       accessibilityRole="button"
       accessibilityLabel={locked ? `${label}, Pro` : label}
       accessibilityState={{ selected: on }}
-      style={[styles.pill, { backgroundColor: on ? theme.picked : theme.surface, borderColor: on ? theme.pickedEdge : theme.edge }]}
+      style={[styles.pill, { backgroundColor: on ? theme.picked : theme.surface, borderColor: on ? theme.pickedEdge : theme.inkFaint }]}
       pressedStyle={{ backgroundColor: theme.raised }}
     >
-      {glyph ? <Glyph name={glyph} size={18} color={theme.ink} /> : null}
-      <Text style={[type.small, { color: theme.ink, fontWeight: on ? '600' : '400' }]} maxFontSizeMultiplier={1.4} numberOfLines={1}>
+      {glyph ? <Glyph name={glyph} size={18} color={on ? theme.bg : theme.ink} /> : null}
+      <Text style={[type.small, { color: on ? theme.bg : theme.ink, fontWeight: '600' }]} maxFontSizeMultiplier={1.4} numberOfLines={1}>
         {label}
       </Text>
       {locked ? <Glyph name="lock" size={14} color={theme.inkFaint} /> : null}
@@ -181,7 +182,7 @@ export function Pill({
 
 /** A surface card with the 1 px edge. */
 export function Panel({ theme, children, style }: { theme: Theme; children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <View style={[styles.panel, { backgroundColor: theme.surface, borderColor: theme.edge }, style]}>{children}</View>;
+  return <View style={[styles.panel, { backgroundColor: theme.paper, borderColor: theme.edge }, style]}>{children}</View>;
 }
 
 /** A row inside a Panel. */
@@ -237,12 +238,15 @@ export function Caption({ theme, children, style }: { theme: Theme; children: Re
   return <Text style={[type.small, { color: theme.inkSoft }, style]}>{children}</Text>;
 }
 
-/** A label over a group of controls. */
+/** A label over a group of controls: condensed capitals, and a rule running out to the edge. */
 export function Label({ theme, children }: { theme: Theme; children: React.ReactNode }) {
   return (
-    <Text style={[type.small, styles.label, { color: theme.inkSoft }]} accessibilityRole="header">
-      {children}
-    </Text>
+    <View style={styles.labelRow}>
+      <Text style={[type.label, { color: theme.inkSoft }]} accessibilityRole="header" maxFontSizeMultiplier={1.4}>
+        {children}
+      </Text>
+      <View style={[styles.labelRule, { backgroundColor: theme.rule }]} />
+    </View>
   );
 }
 
@@ -253,7 +257,7 @@ export function Field({ theme, style, ...rest }: TextInputProps & { theme: Theme
       placeholderTextColor={theme.inkFaint}
       selectionColor={theme.accent}
       {...rest}
-      style={[type.body, styles.field, { color: theme.ink, backgroundColor: theme.surface, borderColor: theme.edge }, style]}
+      style={[type.body, styles.field, { color: theme.ink, backgroundColor: theme.paper, borderColor: theme.inkFaint }, style]}
     />
   );
 }
@@ -316,12 +320,13 @@ export function Drawer({ theme, visible, onClose, children, title }: { theme: Th
 const styles = StyleSheet.create({
   ink: { minHeight: MAIN_BUTTON, borderRadius: radius.large, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.xl },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.s },
-  quiet: { minHeight: 48, borderRadius: radius.small, borderWidth: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s, paddingHorizontal: space.l },
+  quiet: { minHeight: 48, borderRadius: radius.small, borderWidth: 1.5, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.s, paddingHorizontal: space.l },
   glyphBtn: { borderRadius: radius.round, alignItems: 'center', justifyContent: 'center' },
   pill: { minHeight: 40, borderRadius: radius.small, borderWidth: 1, flexDirection: 'row', alignItems: 'center', gap: space.xs, paddingHorizontal: space.m },
   panel: { borderRadius: radius.large, borderWidth: 1, overflow: 'hidden' },
   rowItem: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 52, paddingHorizontal: space.l, paddingVertical: space.m },
-  label: { marginBottom: space.s, marginLeft: space.xs },
+  labelRow: { flexDirection: 'row', alignItems: 'center', gap: space.s, marginBottom: space.s },
+  labelRule: { flex: 1, height: StyleSheet.hairlineWidth },
   field: { minHeight: 48, borderRadius: radius.small, borderWidth: 1, paddingHorizontal: space.m },
   topBar: { flexDirection: 'row', alignItems: 'center', minHeight: 52, paddingHorizontal: space.s },
   topSide: { minWidth: 88 },

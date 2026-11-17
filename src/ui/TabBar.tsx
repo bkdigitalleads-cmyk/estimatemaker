@@ -18,7 +18,7 @@ const TABS: { id: Tab; label: string; glyph: GlyphName }[] = [
 export default function TabBar({ theme, tab, onTab }: { theme: Theme; tab: Tab; onTab: (t: Tab) => void }) {
   const insets = useSafeAreaInsets();
   return (
-    <View style={[styles.bar, { backgroundColor: theme.bg, borderTopColor: theme.edge, paddingBottom: Math.max(insets.bottom - space.s, space.s) }]} accessibilityRole="tablist">
+    <View style={[styles.bar, { backgroundColor: theme.paper, borderTopColor: theme.rule, paddingBottom: Math.max(insets.bottom - space.s, space.s) }]} accessibilityRole="tablist">
       {TABS.map((t) => {
         const on = t.id === tab;
         const color = on ? theme.ink : theme.inkFaint;
@@ -32,8 +32,9 @@ export default function TabBar({ theme, tab, onTab }: { theme: Theme; tab: Tab; 
             accessibilityState={{ selected: on }}
             accessibilityLabel={t.label}
           >
-            <Glyph name={t.glyph} size={26} color={color} weight={on ? 1.9 : 1.6} />
-            <Text style={[type.small, styles.label, { color, fontWeight: on ? '600' : '400' }]} numberOfLines={1} maxFontSizeMultiplier={1.3} adjustsFontSizeToFit minimumFontScale={0.75}>
+            <View style={[styles.mark, { backgroundColor: on ? theme.ink : 'transparent' }]} />
+            <Glyph name={t.glyph} size={26} color={color} weight={on ? 2 : 1.6} />
+            <Text style={[type.label, styles.label, { color, fontSize: 12 }]} numberOfLines={1} maxFontSizeMultiplier={1.3} adjustsFontSizeToFit minimumFontScale={0.75}>
               {t.label}
             </Text>
           </Tap>
@@ -47,7 +48,8 @@ export default function TabBar({ theme, tab, onTab }: { theme: Theme; tab: Tab; 
 export const TAB_BAR_HEIGHT = 64;
 
 const styles = StyleSheet.create({
-  bar: { flexDirection: 'row', borderTopWidth: 1, paddingTop: space.s },
-  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 52, gap: space.xs },
+  bar: { flexDirection: 'row', borderTopWidth: 1 },
+  mark: { position: 'absolute', top: 0, height: 3, left: '30%', right: '30%', borderBottomLeftRadius: 2, borderBottomRightRadius: 2 },
+  tab: { flex: 1, alignItems: 'center', justifyContent: 'center', minHeight: 56, gap: space.xs, paddingTop: space.s },
   label: { alignSelf: 'stretch', textAlign: 'center' },
 });
