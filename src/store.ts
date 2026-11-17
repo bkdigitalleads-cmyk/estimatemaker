@@ -1,15 +1,12 @@
 /**
- * Files on the phone. The documents, clients, items and settings live in
- * SQLite (src/db); this module holds the small key/value settings file and
- * the share copies of exported PDFs in the cache folder.
+ * Storage on the phone. The documents, clients, items and settings live in
+ * SQLite (src/db, one file, estimatemaker.db); this module has the small
+ * key/value helpers over it and the share copies of exported PDFs in the
+ * cache folder, which are cleared at the next launch.
  */
 import { Directory, File, Paths } from 'expo-file-system';
-
-function dir(...parts: string[]): Directory {
-  const d = new Directory(Paths.document, ...parts);
-  if (!d.exists) d.create({ intermediates: true, idempotent: true });
-  return d;
-}
+import { getDb } from './db/native';
+import * as repo from './db/repo';
 
 function cacheDir(name: string): Directory {
   const d = new Directory(Paths.cache, name);
@@ -17,54 +14,14 @@ function cacheDir(name: string): Directory {
   return d;
 }
 
-function readText(f: File): string | null {
-  try {
-    return f.exists ? f.textSync() : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Writes through a temporary file and a move, so a crash never leaves half a JSON file. */
-function writeText(f: File, text: string): void {
-  const tmp = new File(f.parentDirectory, `${f.name}.tmp`);
-  if (tmp.exists) tmp.delete();
-  tmp.create();
-  tmp.write(text);
-  if (f.exists) f.delete();
-  tmp.moveSync(f);
-}
-
-// ---------- key/value ----------
-
-let kvCache: Record<string, string> | null = null;
-const kvFile = () => new File(dir(), 'settings.json');
-
-function kvLoad(): Record<string, string> {
-  if (kvCache) return kvCache;
-  try {
-    const raw = JSON.parse(readText(kvFile()) ?? '{}');
-    kvCache = raw && typeof raw === 'object' ? raw : {};
-  } catch {
-    kvCache = {};
-  }
-  return kvCache!;
-}
+// ---------- key/value (the kv table in SQLite) ----------
 
 export async function kvGet(key: string): Promise<string | null> {
-  return kvLoad()[key] ?? null;
+  return repo.kvGet(await getDb(), key);
 }
 
 export async function kvSet(key: string, value: string): Promise<void> {
-  const all = { ...kvLoad(), [key]: value };
-  kvCache = all;
-  writeText(kvFile(), JSON.stringify(all));
-}
-
-export async function kvAll(prefix: string): Promise<Record<string, string>> {
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(kvLoad())) if (k.startsWith(prefix)) out[k.slice(prefix.length)] = v;
-  return out;
+  await repo.kvSet(await getDb(), key, value);
 }
 
 // ---------- share copies ----------
