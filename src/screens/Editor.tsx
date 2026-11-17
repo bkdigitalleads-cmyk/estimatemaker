@@ -146,7 +146,7 @@ export default function Editor({
       <TopBar theme={theme} title={`${TYPE_LABEL[doc.type]} ${doc.number}`} onBack={back} right={<GlyphButton theme={theme} glyph="more" label="More: duplicate, delete, number" onPress={() => setSheet('more')} />} />
       <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive">
         {statusesFor(doc.type).length > 1 ? (
-          <Choice theme={theme} label="Status" options={statusesFor(doc.type).map((s) => ({ id: s, label: STATUS_LABEL[s] }))} value={doc.status} onChange={(status) => edit({ status })} />
+          <Choice theme={theme} label="Status" options={statusesFor(doc.type).map((s) => ({ id: s, label: STATUS_LABEL[s] }))} value={doc.status} onChange={(status) => edit(status === 'paid' && totals.balance > 0 ? { status, paid: totals.total } : { status })} />
         ) : null}
 
         <Section theme={theme} label="Client">

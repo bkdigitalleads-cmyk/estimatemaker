@@ -2,6 +2,13 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-17: 1.0.0 build 1, step 4 of 7: PDF templates.
+  - One layout (src/pdf/layout.ts) drawn by pdf-lib into the PDF and by Skia on screen (src/ui/PageView.tsx), with the same IBM Plex font files (SIL OFL, licence in assets/fonts), measured with fontkit the way pdf-lib sets text. Three templates (Ledger, Banner, Plain), six accent colors, US Letter and A4; long documents run over pages. Signatures print as vector paths. Fonts are subset; a one-page PDF is about 50 KB. Details and the guardrail in docs/design/NOTES.md.
+  - Preview screen: template and color pickers (saved as the default), every page drawn as it will print, Share PDF, Mail (the client's address filled in, a short note, the PDF attached; the share sheet when Mail has no account) and Print. Nothing goes out until the business has a name. The free-export gate is checked before the PDF is made, and a free export is used only when the PDF went out. A draft that goes out is marked sent. The first PDF out asks for a rating (once ever, never while signing).
+  - Marking an invoice paid, by hand or by making its receipt, sets it paid in full.
+  - Samples: docs/design/pdf-templates.png and docs/design/pdf/ (eight PDFs with PNGs, from `node store/pdf-samples.mjs`).
+  - Checked: `npx tsc --noEmit` clean, `npm test` 49 passing (11 new: fonts and currency glyphs, measuring, wrapping, every template, type and paper size inside the page, totals as printed, multi-page with repeated headers and page counts, signature paths, a real PDF written and read back with four subset fonts and a logo, base64, the guardrail), `npx expo export --platform ios` bundles. The PNGs were looked at one by one.
+
 - 2026-11-17: 1.0.0 build 1, step 3 of 7: screens.
   - Four tabs: Documents, Clients, Items, Settings. Screens over the tabs go on a simple stack (back pops one); after convert or duplicate the new document replaces the old one, so back goes to the list.
   - Documents (home): the business name, two numbers on a paper strip (billed this month and unpaid, with the overdue count; other currencies on a small line), New document (estimate, quote, invoice or receipt, each with one line saying what it is for), search by number, client or amount, type pills, and a filter sheet for status and client. Each row: type, number and date, client, amount, and a status stamp (OVERDUE in red when an invoice is past due).

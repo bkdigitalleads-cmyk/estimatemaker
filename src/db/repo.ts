@@ -271,7 +271,9 @@ export async function convertAndSave(db: Db, id: string, target: DocType, ctx: {
     const number = await takeNumber(db, target);
     const { doc, sourceStatus } = convertDoc(src, target, { id: newId(ctx.now), number, today: ctx.today, now: ctx.now, defaults: ctx.defaults, lineIds: ids(src.lines.length, ctx.now) });
     await writeDoc(db, doc);
-    await db.run('UPDATE docs SET status = ?, updated_at = ? WHERE id = ?', [fitStatus(src.type, sourceStatus), ctx.now, src.id]);
+    // An invoice that became a receipt was paid in full.
+    if (sourceStatus === 'paid') await db.run("UPDATE docs SET status = 'paid', paid = total, balance = 0, updated_at = ? WHERE id = ?", [ctx.now, src.id]);
+    else await db.run('UPDATE docs SET status = ?, updated_at = ? WHERE id = ?', [fitStatus(src.type, sourceStatus), ctx.now, src.id]);
     made = doc;
   });
   return made;

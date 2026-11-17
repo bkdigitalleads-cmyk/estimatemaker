@@ -288,7 +288,10 @@ test('convert: estimate to invoice carries every line and marks the estimate acc
   assert.equal(rec.dueDate, null);
   assert.equal(rec.paid, D.docTotals(inv).total);
   assert.equal(D.docTotals(rec).balance, 0);
-  assert.equal((await R.getDoc(db, inv.id)).status, 'paid');
+  const paidInv = await R.getDoc(db, inv.id);
+  assert.equal(paidInv.status, 'paid');
+  assert.equal(paidInv.paid, D.docTotals(inv).total, 'the invoice is paid in full');
+  assert.equal((await R.listRows(db)).find((r) => r.id === inv.id).balance, 0);
   assert.throws(() => D.convertDoc(rec, 'invoice', { id: 'z', number: 'n', today: TODAY, now: 1, defaults: DEFAULTS, lineIds: [] }), /cannot become/);
   assert.deepEqual(MO.convertTargets('quote'), ['invoice']);
   assert.deepEqual(MO.convertTargets('receipt'), []);

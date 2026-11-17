@@ -109,7 +109,7 @@ function Shell() {
   let body: React.ReactNode;
   if (top?.name === 'doc')
     body = <Editor key={top.id} id={top.id} onBack={pop} onPreview={(id) => push({ name: 'preview', id })} onSignHere={(id) => push({ name: 'signHere', id })} onOwnerSignature={() => push({ name: 'mySignature' })} onOpen={openDoc} />;
-  else if (top?.name === 'preview') body = <Preview key={top.id} id={top.id} onBack={pop} />;
+  else if (top?.name === 'preview') body = <Preview key={top.id} id={top.id} onBack={pop} onBusiness={() => push({ name: 'business' })} />;
   else if (top?.name === 'signHere') body = <SignHere docId={top.id} onBack={pop} />;
   else if (top?.name === 'mySignature') body = <MySignature onBack={pop} />;
   else if (top?.name === 'business') body = <Business onBack={pop} />;

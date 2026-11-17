@@ -199,9 +199,9 @@ test('copy: no em dashes, exclamation marks, banned words or brand names in the 
   for (const f of [...walk(`${ROOT}src`, ['.ts', '.tsx']), `${ROOT}App.tsx`, ...walk(`${ROOT}docs`, ['.html', '.md']), ...walk(`${ROOT}store`, ['.md', '.js']), `${ROOT}README.md`, ...[`${ROOT}NOTES.md`, `${ROOT}CLAUDE.md`].filter(existsSync)])
     assert.ok(!/brianwkershner/i.test(readFileSync(f, 'utf8')), `personal address in ${f}`);
   assert.match(readFileSync(`${ROOT}src/links.ts`, 'utf8'), /SUPPORT_EMAIL = 'bkdigitalleads@gmail\.com'/);
-  // No other address anywhere in the app or the site.
+  // No other real address anywhere in the app or the site (samples use the reserved .example names).
   for (const f of [...walk(`${ROOT}src`, ['.ts', '.tsx']), ...walk(`${ROOT}docs`, ['.html'])])
-    for (const m of readFileSync(f, 'utf8').matchAll(/[\w.+-]+@[\w-]+\.[\w.]+/g)) assert.equal(m[0], 'bkdigitalleads@gmail.com', `${m[0]} in ${f}`);
+    for (const m of readFileSync(f, 'utf8').matchAll(/[\w.+-]+@[\w-]+(\.[\w-]+)+/g)) if (!/(\.example|@example\.com)$/.test(m[0])) assert.equal(m[0], 'bkdigitalleads@gmail.com', `${m[0]} in ${f}`);
   for (const f of [...walk(`${ROOT}src`, ['.tsx']), `${ROOT}App.tsx`]) {
     const strings = readFileSync(f, 'utf8').match(/'[^'\n]*'|"[^"\n]*"|`[^`\n]*`|>[^<>{}\n]+</g) ?? [];
     for (const t of strings) assert.ok(!/[A-Za-z0-9.]!(\s|$|['"`<])/.test(t), `exclamation in ${f}: ${t}`);
