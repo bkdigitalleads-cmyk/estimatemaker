@@ -207,3 +207,28 @@ test('copy: no em dashes, exclamation marks, banned words or brand names in the 
     for (const t of strings) assert.ok(!/[A-Za-z0-9.]!(\s|$|['"`<])/.test(t), `exclamation in ${f}: ${t}`);
   }
 });
+
+// ---------- onboarding and paywall ----------
+
+test('onboarding: four product screens, then the first estimate with its PDF preview, then trial, reminder and the paywall', () => {
+  const app = readFileSync(`${ROOT}App.tsx`, 'utf8');
+  const order = ["step === 'intro' && <Welcome onDone={() => setStep('first')}", "step === 'first' && (", "setStep('trial')", '<TrialSteps onDone={openOnboardingPaywall}', 'onboarding\n          hero='];
+  let at = -1;
+  for (const o of order) {
+    const i = app.indexOf(o, at + 1);
+    assert.ok(i > at, `out of order or missing: ${o}`);
+    at = i;
+  }
+  const w = readFileSync(`${ROOT}src/screens/Welcome.tsx`, 'utf8');
+  assert.equal((w.match(/title: '[^']+', line: '[^']+', show: '(estimate|convert|sign|receipt)'/g) ?? []).length, 4, 'four screens, each with the product');
+  assert.match(w, /<PageWindow[^>]*doc=\{doc\}/, 'the first estimate is shown as its page');
+  assert.match(w, /Skip for now/);
+  assert.match(w, /data\.saveBusiness\(\{ \.\.\.data\.business, name: name\.trim\(\) \}\)/, 'the name goes into the business profile');
+  const pay = readFileSync(`${ROOT}src/screens/Paywall.tsx`, 'utf8');
+  assert.match(pay, /ONBOARDING_CLOSE_DELAY_MS = 3000/);
+  assert.match(pay, /label=\{purchasing \? 'One moment' : 'Continue'\}/, 'Continue, never Subscribe');
+  assert.match(pay, /Restore purchases/);
+  assert.match(pay, /Terms of Use \(EULA\)/);
+  assert.match(pay, /p\.product\.priceString/, 'prices come from the store');
+  assert.ok(!/\$\d/.test(pay.replace(/\$\{/g, '')), 'no price typed into the paywall');
+});

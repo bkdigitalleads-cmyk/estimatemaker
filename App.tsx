@@ -20,7 +20,9 @@ import { DataProvider, useData } from './src/data';
 import type { Client, Item } from './src/db/repo';
 import type { DocType } from './src/model';
 import PaywallModal from './src/screens/Paywall';
-import Welcome, { TrialSteps } from './src/screens/Welcome';
+import Welcome, { FirstEstimate, TrialSteps } from './src/screens/Welcome';
+import { PageWindow } from './src/ui/Showcase';
+import type { Doc } from './src/model';
 import TabBar, { Tab } from './src/ui/TabBar';
 import { Drawer, InkButton, Title, Toast } from './src/ui/Kit';
 
@@ -52,7 +54,8 @@ function Shell() {
   };
   const [onboarded, setOnboarded] = useState<boolean | null>(null);
   // New installs: four screens, the first estimate, the trial and reminder screens, then the paywall.
-  const [step, setStep] = useState<'intro' | 'trial' | 'paywall'>('intro');
+  const [step, setStep] = useState<'intro' | 'first' | 'trial' | 'paywall'>('intro');
+  const [firstDoc, setFirstDoc] = useState<Doc | null>(null);
   // After the onboarding paywall is closed with the X: the small "first two PDFs are free" sheet.
   const [claim, setClaim] = useState(false);
   const paywallOpened = useRef(false);
@@ -65,13 +68,14 @@ function Shell() {
     if (!ready || onboarded !== null) return;
     (async () => {
       if ((await kvGet(ONBOARDED_KEY)) === '1') return setOnboarded(true);
-      if (isPro) {
+      // Anyone who already made a document, or is Pro, has used the app: no onboarding.
+      if (isPro || data.rows.length > 0) {
         kvSet(ONBOARDED_KEY, '1').catch(() => {});
         return setOnboarded(true);
       }
       setOnboarded(false);
     })().catch(() => setOnboarded(true)); // fail open: never trap anyone
-  }, [ready, onboarded, isPro]);
+  }, [ready, onboarded, isPro, data.rows.length]);
 
   const openOnboardingPaywall = () => {
     if (paywallOpened.current) return;
@@ -81,6 +85,8 @@ function Shell() {
       if (afterOnboardingPaywall(pro) === 'claim') setTimeout(() => setClaim(true), 450);
       kvSet(ONBOARDED_KEY, '1').catch(() => {});
       setOnboarded(true);
+      // The first estimate is open and ready to finish.
+      if (firstDoc) setStack([{ name: 'doc', id: firstDoc.id }]);
     });
   };
 
@@ -98,9 +104,28 @@ function Shell() {
     return (
       <View style={{ flex: 1, backgroundColor: theme.bg, paddingTop: insets.top }}>
         <StatusBar style={theme.isDark ? 'light' : 'dark'} />
-        {step === 'intro' && <Welcome onDone={() => setStep('trial')} />}
+        {step === 'intro' && <Welcome onDone={() => setStep('first')} />}
+        {step === 'first' && (
+          <FirstEstimate
+            onDone={async (id) => {
+              setFirstDoc(id ? await data.getDoc(id) : null);
+              setStep('trial');
+            }}
+          />
+        )}
         {(step === 'trial' || step === 'paywall') && <TrialSteps onDone={openOnboardingPaywall} />}
-        <PaywallModal privacyUrl={PRIVACY_URL} onboarding />
+        <PaywallModal
+          privacyUrl={PRIVACY_URL}
+          onboarding
+          hero={
+            firstDoc ? (
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.m }}>
+                <PageWindow theme={theme} doc={firstDoc} business={data.business} width={72} height={92} accent={data.defaults.accent} locale={data.locale.tag} label="Your first estimate" />
+                <Text style={[type.strong, { color: theme.ink, flex: 1 }]}>Your first estimate is saved.</Text>
+              </View>
+            ) : null
+          }
+        />
       </View>
     );
   }

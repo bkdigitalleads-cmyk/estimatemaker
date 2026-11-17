@@ -37,7 +37,7 @@ const REASON: Record<PaywallReason, { title: string; line: string }> = {
  * Weekly is listed first and preselected on both. Prices and trial lengths
  * always come from StoreKit. Restore on both.
  */
-export default function PaywallModal({ privacyUrl, onboarding = false }: { privacyUrl: string; onboarding?: boolean }) {
+export default function PaywallModal({ privacyUrl, onboarding = false, hero }: { privacyUrl: string; onboarding?: boolean; hero?: React.ReactNode }) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
@@ -145,6 +145,7 @@ export default function PaywallModal({ privacyUrl, onboarding = false }: { priva
             <GlyphButton theme={theme} glyph="close" label="Close" onPress={close} disabled={!canClose} color={theme.inkSoft} />
           </View>
 
+          {hero ? <View style={styles.pad}>{hero}</View> : null}
           <Text style={[type.title, styles.pad, compact ? { marginTop: space.m } : { marginTop: space.l }, { color: theme.ink }]} accessibilityRole="header">
             {headline}
           </Text>

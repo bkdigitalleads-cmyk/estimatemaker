@@ -2,6 +2,14 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-17: 1.0.0 build 1, step 5 of 7: onboarding and paywall.
+  - First launch: four screens that show the product, each a real render, not instructions: the top of an estimate drawn by the PDF layout ("Estimates that look like your business."), the list's own rows with an accepted estimate and its new invoice ("Turn a yes into an invoice."), a client's signature drawing itself in over the total with the pen engine ("Get it signed on the spot."), and a receipt's totals with the PAID stamp ("Paid. Send the receipt."). Sample content is a made-up one-person carpentry business (src/sampleDoc.ts).
+  - Then "Make your first estimate.": the business name, one line of work and its price, then "See the estimate" shows that estimate as its PDF page, before any paywall. It is saved as a draft and the name goes into the business profile. Skip for now is there.
+  - Then the engine's trial explainer and reminder screens (only when RevenueCat says this Apple ID can get the free trial) and the onboarding paywall, with "Your first estimate is saved." and a small page at the top. Close appears after 3 seconds; closing shows "Your first two PDFs are free."; the app then opens on that first estimate.
+  - Paywall: estimate_pro_weekly ($rc_weekly, 3-day trial) first and preselected, then yearly and lifetime; every price and the trial length from RevenueCat; Continue, never Subscribe; Restore, Terms and Privacy on screen. A trial that starts here asks for a rating once.
+  - Anyone who already has a document or Pro skips onboarding.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 50 passing (the onboarding order and the paywall rules are checked in the source), `npx expo export --platform ios` bundles.
+
 - 2026-11-17: 1.0.0 build 1, step 4 of 7: PDF templates.
   - One layout (src/pdf/layout.ts) drawn by pdf-lib into the PDF and by Skia on screen (src/ui/PageView.tsx), with the same IBM Plex font files (SIL OFL, licence in assets/fonts), measured with fontkit the way pdf-lib sets text. Three templates (Ledger, Banner, Plain), six accent colors, US Letter and A4; long documents run over pages. Signatures print as vector paths. Fonts are subset; a one-page PDF is about 50 KB. Details and the guardrail in docs/design/NOTES.md.
   - Preview screen: template and color pickers (saved as the default), every page drawn as it will print, Share PDF, Mail (the client's address filled in, a short note, the PDF attached; the share sheet when Mail has no account) and Print. Nothing goes out until the business has a name. The free-export gate is checked before the PDF is made, and a free export is used only when the PDF went out. A draft that goes out is marked sent. The first PDF out asks for a rating (once ever, never while signing).
