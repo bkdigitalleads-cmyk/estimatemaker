@@ -194,7 +194,7 @@ test('copy: no em dashes, exclamation marks, banned words or brand names in the 
     let s = readFileSync(f, 'utf8');
     if (f.endsWith('metadata.md')) s = s.split('\n').slice(3).join('\n'); // the line that names the rule
     if (/\.(ts|tsx)$/.test(f)) s = (s.match(/'[^'\n]*'|"[^"\n]*"|`[^`]*`|>[^<>{}]+</g) ?? []).filter((t) => !/^'\.\.?\//.test(t) && !/^'(react|expo|@)/.test(t)).join('\n');
-    assert.ok(!s.includes('—'), `em dash in ${f}`);
+    assert.ok(!s.includes('\u2014'), `em dash in ${f}`);
     for (const w of [/\bunlock/i, /\bpremium\b/i, /\bseamless/i, /\beffortless/i, /\belevate/i, /\bpowerful\b/i, /in seconds/i, /\bwelcome\b/i, /\blet's\b/i, /professional-grade/i]) {
       assert.equal(s.match(w), null, `${w} in ${f}`);
     }
