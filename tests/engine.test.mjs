@@ -148,7 +148,7 @@ test('purchases.ts is the engine copy: entitlement pro, key must start with appl
   assert.match(p, /offerings\.current/);
 });
 
-test('app.json: identity, the three Cowork placeholders, iPhone only, no permissions, push entitlement plugin last', () => {
+test('app.json: identity, iPhone only, no permissions, push entitlement plugin last, the store ids from Cowork', () => {
   const app = JSON.parse(readFileSync(`${ROOT}app.json`, 'utf8')).expo;
   assert.equal(app.name, 'Estimate Maker');
   assert.equal(app.slug, 'estimatemaker');
@@ -164,9 +164,11 @@ test('app.json: identity, the three Cowork placeholders, iPhone only, no permiss
   assert.ok(!JSON.stringify(app).match(/UsageDescription|Camera|Microphone|Location/));
   const eas = JSON.parse(readFileSync(`${ROOT}eas.json`, 'utf8'));
   assert.equal(eas.cli.appVersionSource, 'local');
+  // Not created yet (Nov 17): Cowork fills it in when the Expo project exists.
   assert.equal(app.extra.eas.projectId, 'TODO_COWORK_EXPO_PROJECT_ID');
-  assert.equal(app.extra.revenueCatApiKeyIos, 'TODO_COWORK_REVENUECAT_PUBLIC_IOS_KEY');
-  assert.equal(eas.submit.production.ios.ascAppId, 'TODO_COWORK_ASC_APP_ID');
+  // The public RevenueCat SDK key (purchases run only when it starts with appl_).
+  assert.equal(app.extra.revenueCatApiKeyIos, 'appl_nCafWzGkWAemboXFcqeFgtSGKZc');
+  assert.equal(eas.submit.production.ios.ascAppId, '6835862478');
 });
 
 function walk(dir, ext) {
@@ -178,11 +180,12 @@ function walk(dir, ext) {
   });
 }
 
-test('placeholders: exactly three, each only where it belongs', () => {
-  const files = [`${ROOT}app.json`, `${ROOT}eas.json`, ...walk(`${ROOT}src`, ['.ts', '.tsx']), `${ROOT}App.tsx`];
-  const found = new Set();
-  for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(/TODO_COWORK_[A-Z_]+/g)) found.add(m[0]);
-  assert.deepEqual([...found].sort(), ['TODO_COWORK_ASC_APP_ID', 'TODO_COWORK_EXPO_PROJECT_ID', 'TODO_COWORK_REVENUECAT_PUBLIC_IOS_KEY']);
+test('placeholders: only the Expo project id is left, and only in app.json', () => {
+  const files = [`${ROOT}app.json`, `${ROOT}eas.json`, ...walk(`${ROOT}src`, ['.ts', '.tsx']), `${ROOT}App.tsx`, ...walk(`${ROOT}docs`, ['.html']), `${ROOT}store/metadata.md`];
+  const found = [];
+  for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(/TODO_COWORK_[A-Z_]+/g)) found.push(`${f.slice(ROOT.length)}:${m[0]}`);
+  assert.deepEqual(found.filter((x) => !x.startsWith('store/metadata.md')), ['app.json:TODO_COWORK_EXPO_PROJECT_ID']);
+  assert.match(readFileSync(`${ROOT}docs/index.html`, 'utf8'), /apps\.apple\.com\/app\/id6835862478/);
 });
 
 test('copy: no em dashes, exclamation marks, banned words or brand names in the app, the website or the store text', () => {

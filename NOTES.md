@@ -2,6 +2,24 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-17: 1.0.0 build 1, step 7 of 7: website, store listing, screenshots, and the values from Cowork.
+  - Values from Cowork: app.json `extra.revenueCatApiKeyIos` is the public RevenueCat key (purchases on), eas.json `ascAppId` 6835862478. The Expo project is not created yet, so `TODO_COWORK_EXPO_PROJECT_ID` stays in app.json `extra.eas.projectId`, the one placeholder left. Store name accepted as written. Product ids, entitlement and offering were already exactly as set up.
+  - Website (docs/, GitHub Pages): landing page (ticket and ledger look, the app's own screens and the three PDF templates, an App Store link to id6835862478), privacy.html (Purchases through RevenueCat, not linked to identity, and nothing more is collected; documents stay on the phone), support.html (how everything works, bkdigitalleads@gmail.com, "we reply within two business days"), style.css with the Plex fonts self-hosted (no third-party requests), og-image, sitemap and robots.
+  - store/metadata.md: name, subtitle, keywords (100/100, no word from the name or subtitle), promotional text, description, What's New, category, age rating, privacy label, pricing and RevenueCat setup, review notes.
+  - store/screenshots.js: six captioned screenshots at 1206x2622 (store/screenshots/6.3) and 1320x2868 (6.9) from 3x renders of the app's screens in store/screens. Captions in Plex Condensed with an orange rule; no frames, gradients or emoji.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 57 passing (new: name and subtitle, keyword rules, promo length, product ids, the privacy page, the website files and links, screenshot counts and sizes; only the Expo project id is still a placeholder), `npx expo export --platform ios` bundles, `npx expo config --type introspect` shows `entitlements: {}`, no usage strings, bundle com.bwk.estimatemaker build 1.
+
+## TestFlight checklist (1.0.0 build 1)
+
+1. Fresh install: the four onboarding screens (the estimate page, the list rows, the signature drawing itself in, the receipt), then Make your first estimate with your own business name, a line and a price, See the estimate; check the page draws with the right fonts.
+2. The trial and reminder screens and the paywall: weekly first and preselected, prices from the store, close after 3 seconds, then "Your first two PDFs are free" and the app opening on that estimate.
+3. Your business: add a logo from Photos (try a PNG with a clear background and a HEIC photo); fill the address and a license number.
+4. On the estimate: add a client, a saved item, a second line with a discount and tax; type amounts with the iPhone's own keyboard; tap Sign here and sign with a finger.
+5. Send: Share PDF to Files and open it; Mail (with and without a Mail account); Print to a printer or Save as PDF. Then Make invoice, Make receipt, and send a third PDF to see the paywall.
+6. Settings: change the currency (try EUR on a German region phone, JPY), the paper size, the numbering; check the home numbers and search.
+7. Dark mode, the largest Dynamic Type size, and VoiceOver on the home list and the editor.
+8. Restore purchases on a second device; the trial reminder notification a day before the sandbox trial ends.
+
 - 2026-11-17: 1.0.0 build 1, step 6 of 7: design pass.
   - New look, "the job ticket" (docs/design/NOTES.md): manila background, paper tickets, near-black ink, tape-measure orange (#C9480B; #F07A38 in dark) on the main button only. Type is IBM Plex, the PDFs' family: Plex Sans Condensed SemiBold for titles, field labels in capitals with a rule and the main button's lettering; Plex Mono for every amount and number. Newsreader and its licence are gone.
   - The home numbers sit on a ticket stub with a perforation and a torn edge; documents, clients and items are ruled ledger lines with a margin rule (type and date in the margin, a rubber stamp for the status); totals end with a rule over the total and a double rule over the balance due; small corners; outlined quiet buttons; picked choices and switches in ink.
@@ -55,4 +73,8 @@ Newest first. One entry per commit: date, version/build, what changed and why, a
 
 ## Noticed, not changed
 
-- Nothing yet.
+- Money is stored at a fixed scale of 100. Currencies with three decimals (KWD, BHD, OMR) are rounded to two.
+- Tax is always added on top; prices that already include tax (common with VAT) are not handled.
+- The on-screen page preview is drawn by Skia with the PDF's fonts; only a device build shows whether Skia's text matches pdf-lib's to the pixel (both use the same font files and widths).
+- The home screen name "Estimate Maker" is 14 characters; iOS may shorten it under the icon.
+- The renders come from a react-native-web copy; the iOS switch and keyboard look slightly different on a phone.
