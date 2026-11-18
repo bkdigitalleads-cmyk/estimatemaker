@@ -31,9 +31,13 @@ What the "before" showed, and what changed:
 
 ## Icon
 
+Build 2 (Nov 18, 2026): Brian chose a new icon, a sheet of paper with ruled lines and a yellow pencil, on green (#1F6F54). It is kept exactly as he drew it in `store/icon-pencil.svg`; `node store/icon.js` renders it, with no shape or color changed, to `assets/icon.png` (1024x1024, square corners, no alpha channel), both splash icons, the Android adaptive foreground (its background color is the same green), the favicon, and the website's `icon-512.png`, `apple-touch-icon.png` and `og-image.png`. Only the icon changed: the app keeps its manila, ink and tape-measure orange, and its screens are as they were.
+
+### 1.0.0 concepts (build 1)
+
 Four concepts in `icon-options.png`, each large and at 60 px on a light and a dark wallpaper, drawn by `store/icon.js` (`node icon.js options`; `node icon.js` writes `assets/` and the website images):
 
-1. ticket (chosen): a paper work ticket, tilted a little, with a torn bottom edge, a heavy title bar, ruled lines and the total underlined with an orange tag, on tape-measure orange. It is the only one with a silhouette you can name at 60 px (the torn edge), and the orange tile stands out on both wallpapers and next to blue and green neighbours.
+1. ticket (shipped in build 1, replaced in build 2): a paper work ticket, tilted a little, with a torn bottom edge, a heavy title bar, ruled lines and the total underlined with an orange tag, on tape-measure orange. It is the only one with a silhouette you can name at 60 px (the torn edge), and the orange tile stands out on both wallpapers and next to blue and green neighbours.
 2. carbon: two sheets of a carbonless book, white over canary, with "EST" in orange, on charcoal. Warm and specific, but it disappears on the dark wallpaper.
 3. stamp: "PAID" as a rubber stamp. Clear, but it says receipts only, and a pale tile is weak on a light wallpaper.
 4. tag: a ruled slip with an orange check mark on black. Reads as a to-do list.

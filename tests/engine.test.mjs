@@ -154,7 +154,7 @@ test('app.json: identity, iPhone only, no permissions, push entitlement plugin l
   assert.equal(app.slug, 'estimatemaker');
   assert.equal(app.ios.bundleIdentifier, 'com.bwk.estimatemaker');
   assert.equal(app.version, '1.0.0');
-  assert.equal(app.ios.buildNumber, '1');
+  assert.equal(app.ios.buildNumber, '2');
   assert.equal(app.ios.supportsTablet, false);
   assert.equal(JSON.parse(readFileSync(`${ROOT}package.json`, 'utf8')).version, app.version);
   assert.equal(app.owner, 'bkdeveloper123');

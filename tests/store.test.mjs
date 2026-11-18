@@ -72,3 +72,14 @@ test('screenshots: six captioned shots at 1206x2622 and six at 1320x2868', () =>
     for (const f of files) assert.deepEqual(pngSize(`${ROOT}store/screenshots/${dir}/${f}`), [w, h], `${dir}/${f}`);
   }
 });
+
+test('app icon: 1024x1024, no alpha channel, from store/icon-pencil.svg; the website uses the same icon', () => {
+  const b = readFileSync(`${ROOT}assets/icon.png`);
+  assert.deepEqual(pngSize(`${ROOT}assets/icon.png`), [1024, 1024]);
+  assert.equal(b[25], 2, 'color type 2: RGB, no alpha');
+  const svg = readFileSync(`${ROOT}store/icon-pencil.svg`, 'utf8');
+  assert.match(svg, /fill="#1F6F54"/);
+  assert.match(readFileSync(`${ROOT}store/icon.js`, 'utf8'), /icon-pencil\.svg/);
+  for (const [f, w] of [['assets/splash-icon.png', 512], ['assets/splash-icon-dark.png', 512], ['assets/favicon.png', 48], ['assets/android-icon-foreground.png', 1024], ['docs/icon-512.png', 512], ['docs/apple-touch-icon.png', 180]]) assert.deepEqual(pngSize(`${ROOT}${f}`), [w, w], f);
+  for (const f of ['index.html', 'privacy.html', 'support.html']) assert.match(readFileSync(`${ROOT}docs/${f}`, 'utf8'), /a yellow pencil, on a green tile/);
+});

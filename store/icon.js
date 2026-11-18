@@ -3,18 +3,25 @@ const opentype = require('opentype.js');
 const path = require('path');
 const fs = require('fs');
 
-// Estimate Maker icon concepts, in the app's own palette (work-ticket paper,
-// ink, tape-measure orange) and its own type (IBM Plex Sans Condensed and
-// Plex Mono, SIL OFL), drawn as outlines so they look the same anywhere.
-// `node icon.js options` writes docs/design/icon-options.png: each concept
-// large, then at 60 px on a light and a dark wallpaper. `node icon.js`
-// writes the chosen one to ../assets and the website.
+// Estimate Maker's icon.
+// `node icon.js` writes the shipped icon to ../assets and the website from
+// store/icon-pencil.svg (Brian's pick for build 2, Nov 18, 2026: a sheet
+// with a pencil on green), drawn exactly as the SVG is, with no shape or
+// color changed.
+// `node icon.js options` still writes docs/design/icon-options.png, the four
+// 1.0.0 concepts in the app's own palette (work-ticket paper, ink,
+// tape-measure orange), each large and at 60 px on a light and a dark
+// wallpaper. Build 1 shipped the first of them, "ticket".
 //   ticket - a work ticket with a torn bottom edge, ruled lines and the total underlined
 //   carbon - two sheets of a carbonless book, white over canary, the top one ruled
 //   stamp  - "PAID" as a rubber stamp, tilted, in orange ink on paper
 //   tag    - an orange tile with a paper slip, ruled lines and a check mark
 // No currency sign (the app is for every currency), no wrench, hammer or hard hat.
+// The 1.0.0 concept marked in icon-options.png (shipped in build 1).
 const CHOSEN = 'ticket';
+
+/** The shipped icon (build 2 on). */
+const SHIPPED = path.join(__dirname, 'icon-pencil.svg');
 
 const ROOT = path.join(__dirname, '..');
 const COND = opentype.loadSync(`${ROOT}/assets/fonts/IBMPlexSansCondensed-SemiBold.ttf`);
@@ -128,18 +135,37 @@ async function options() {
   console.log('docs/design/icon-options.png');
 }
 
+/** The SVG rendered at a size, square, edge to edge. */
+function render(svg, size) {
+  return sharp(svg, { density: Math.max(72, (72 * size) / 1024) }).resize(size, size);
+}
+
+/** The icon with iOS's rounded-square corners, for the splash and the website. */
+async function roundedSvg(svg, size) {
+  const r = Math.round(size * 0.2237);
+  const mask = Buffer.from(`<svg width="${size}" height="${size}"><rect width="${size}" height="${size}" rx="${r}" fill="#fff"/></svg>`);
+  return sharp(await render(svg, size).png().toBuffer()).composite([{ input: mask, blend: 'dest-in' }]).png().toBuffer();
+}
+
 async function write() {
-  const svg = Buffer.from(art[CHOSEN]());
-  await sharp(svg).resize(1024, 1024).flatten({ background: '#ffffff' }).png().toFile(`${ROOT}/assets/icon.png`);
+  const svg = fs.readFileSync(SHIPPED);
+  // App Store icon: 1024x1024, square corners (iOS rounds it), no alpha channel.
+  await render(svg, 1024).flatten({ background: '#ffffff' }).removeAlpha().png().toFile(`${ROOT}/assets/icon.png`);
   // Splash: the icon's tile with its corners, centred on the app's background (app.json splash colours).
-  await sharp(await masked(CHOSEN, 512)).toFile(`${ROOT}/assets/splash-icon.png`);
-  await sharp(await masked(CHOSEN, 512)).toFile(`${ROOT}/assets/splash-icon-dark.png`);
-  await sharp(svg).resize(48, 48).png().toFile(`${ROOT}/assets/favicon.png`);
-  await sharp(svg).resize(1024, 1024).png().toFile(`${ROOT}/assets/android-icon-foreground.png`);
+  const tile = await roundedSvg(svg, 512);
+  await sharp(tile).toFile(`${ROOT}/assets/splash-icon.png`);
+  await sharp(tile).toFile(`${ROOT}/assets/splash-icon-dark.png`);
+  await render(svg, 48).png().toFile(`${ROOT}/assets/favicon.png`);
+  await render(svg, 1024).png().toFile(`${ROOT}/assets/android-icon-foreground.png`);
   fs.mkdirSync(`${ROOT}/docs`, { recursive: true });
-  await sharp(await masked(CHOSEN, 512)).toFile(`${ROOT}/docs/icon-512.png`);
-  await sharp(svg).resize(180, 180).png().toFile(`${ROOT}/docs/apple-touch-icon.png`);
-  console.log('assets/icon.png, splash, favicon, docs/icon-512.png, docs/apple-touch-icon.png');
+  await sharp(tile).toFile(`${ROOT}/docs/icon-512.png`);
+  await render(svg, 180).flatten({ background: '#ffffff' }).removeAlpha().png().toFile(`${ROOT}/docs/apple-touch-icon.png`);
+  // The website's share image: the icon beside the name, on the app's manila.
+  const t1 = COND.getPath('Estimate Maker', 300, 260, 96).toPathData(2);
+  const t2 = COND.getPath('Estimates, invoices and receipts on iPhone', 300, 340, 40).toPathData(2);
+  const og = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630"><rect width="1200" height="630" fill="#EEE8DC"/><path d="${t1}" fill="#1C1B19"/><path d="${t2}" fill="#5B574F"/></svg>`);
+  await sharp(og).composite([{ input: await roundedSvg(svg, 220), left: 50, top: 150 }]).png().toFile(`${ROOT}/docs/og-image.png`);
+  console.log('assets/icon.png, splash-icon.png, splash-icon-dark.png, favicon.png, android-icon-foreground.png, docs/icon-512.png, docs/apple-touch-icon.png, docs/og-image.png');
 }
 
 (process.argv[2] === 'options' ? options() : write()).catch((e) => {

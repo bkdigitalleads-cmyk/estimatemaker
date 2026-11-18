@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.bwk.estimatemaker",
-      "buildNumber": "1",
+      "buildNumber": "2",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationCategoryType": "public.app-category.business"
@@ -20,7 +20,7 @@
     "android": {
       "package": "com.bwk.estimatemaker",
       "adaptiveIcon": {
-        "backgroundColor": "#D9531E",
+        "backgroundColor": "#1F6F54",
         "foregroundImage": "./assets/android-icon-foreground.png"
       },
       "predictiveBackGestureEnabled": false
