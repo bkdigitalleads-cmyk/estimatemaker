@@ -6,7 +6,7 @@ App #15 in Brian's iOS app portfolio (seller bkdigitalleads-cmyk). Expo SDK 57, 
 
 - App Store name: "Estimate Maker & Receipt Maker". Subtitle "Invoice Generator, Quote Maker". Home screen name and in-app name: "Estimate Maker". Category Business, secondary Productivity. Bundle ID com.bwk.estimatemaker. Expo slug and scheme: estimatemaker. Owner bkdeveloper123. GitHub: bkdigitalleads-cmyk/estimatemaker.
 - Set up (Nov 17, 2026, values from Cowork): app.json `extra.revenueCatApiKeyIos` is the public RevenueCat SDK key (starts with `appl_`, so purchases are on; the app runs with purchases off whenever it does not), eas.json `ascAppId` 6835862478 (https://apps.apple.com/app/id6835862478). app.json `extra.eas.projectId` 856ac8c1-33de-48e9-a845-64e9cd7354a3 (Expo project bkdeveloper123/estimatemaker, set Nov 18). No placeholders are left.
-- Not in the store yet. Version 1.0.0 build 1 is on branch claude/estimate-1.0.0 (PR, not merged).
+- Not in the store yet. 1.0.0 build 1 (PR 1, merged) is on TestFlight. Build 2, the pencil icon, is on branch claude/estimate-icon-pencil (PR, not merged).
 - What it is: an offline estimate, quote, invoice and receipt maker for contractors, freelancers and small shops. No account, no server, nothing leaves the phone unless the person shares a PDF.
 - Guardrail, always: every document prints the person's own business details. Never ship a template, sample or screenshot that imitates a store, brand or bank, and never use a retailer's name in samples. Sample data uses plain people's names and "Your Business".
 

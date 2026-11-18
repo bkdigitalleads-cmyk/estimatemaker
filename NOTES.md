@@ -2,6 +2,11 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-18: 1.0.0 build 2, the pencil icon (branch claude/estimate-icon-pencil).
+  - Brian chose a new app icon, a sheet with a pencil on green, to replace the orange ticket. The SVG is saved exactly as given in store/icon-pencil.svg, and store/icon.js now renders the shipped files from it: assets/icon.png (1024x1024, no alpha, square corners), splash-icon.png and splash-icon-dark.png, android-icon-foreground.png (app.json adaptive icon background set to the same green, #1F6F54), favicon.png, docs/icon-512.png, docs/apple-touch-icon.png and docs/og-image.png. The website's icon descriptions say what the new one shows. `node icon.js options` still draws the 1.0.0 concepts.
+  - app.json `ios.buildNumber` 2 (version stays 1.0.0), so the merge makes a new TestFlight build. Nothing else in the app changed: the orange accent and every screen are as they were.
+  - Checked: assets/icon.png is RGB with no alpha; compared pixel by pixel with Chromium's rendering of the same SVG, 13 of 1,048,576 pixels differ by more than 40 levels (edge smoothing only). `npx tsc --noEmit` clean, `npm test` passing (new check: icon sizes, no alpha, the SVG source, the website's icon text; build number 2).
+
 - 2026-11-18: 1.0.0 build 1, the last value from Cowork: app.json `extra.eas.projectId` is 856ac8c1-33de-48e9-a845-64e9cd7354a3 (Expo project bkdeveloper123/estimatemaker); owner bkdeveloper123 and slug estimatemaker already matched. No Cowork placeholder is left anywhere in the repo (a test now checks every app, docs, store, notes and test file). The icon stays concept 1, the orange ticket (store/icon.js `CHOSEN = 'ticket'`, assets/icon.png unchanged). Checked: `npx tsc --noEmit` clean, `npm test` passing, `npx expo config --type introspect` shows the project id, owner and slug.
 
 - 2026-11-17: 1.0.0 build 1, step 7 of 7: website, store listing, screenshots, and the values from Cowork.
