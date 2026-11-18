@@ -164,8 +164,8 @@ test('app.json: identity, iPhone only, no permissions, push entitlement plugin l
   assert.ok(!JSON.stringify(app).match(/UsageDescription|Camera|Microphone|Location/));
   const eas = JSON.parse(readFileSync(`${ROOT}eas.json`, 'utf8'));
   assert.equal(eas.cli.appVersionSource, 'local');
-  // Not created yet (Nov 17): Cowork fills it in when the Expo project exists.
-  assert.equal(app.extra.eas.projectId, 'TODO_COWORK_EXPO_PROJECT_ID');
+  // Expo project bkdeveloper123/estimatemaker.
+  assert.equal(app.extra.eas.projectId, '856ac8c1-33de-48e9-a845-64e9cd7354a3');
   // The public RevenueCat SDK key (purchases run only when it starts with appl_).
   assert.equal(app.extra.revenueCatApiKeyIos, 'appl_nCafWzGkWAemboXFcqeFgtSGKZc');
   assert.equal(eas.submit.production.ios.ascAppId, '6835862478');
@@ -180,11 +180,16 @@ function walk(dir, ext) {
   });
 }
 
-test('placeholders: only the Expo project id is left, and only in app.json', () => {
-  const files = [`${ROOT}app.json`, `${ROOT}eas.json`, ...walk(`${ROOT}src`, ['.ts', '.tsx']), `${ROOT}App.tsx`, ...walk(`${ROOT}docs`, ['.html']), `${ROOT}store/metadata.md`];
+test('placeholders: none left anywhere in the repo', () => {
+  const files = [`${ROOT}app.json`, `${ROOT}eas.json`, `${ROOT}package.json`, `${ROOT}App.tsx`, `${ROOT}index.ts`, `${ROOT}CLAUDE.md`, `${ROOT}NOTES.md`, `${ROOT}README.md`, ...walk(`${ROOT}src`, ['.ts', '.tsx']), ...walk(`${ROOT}docs`, ['.html', '.md']), ...walk(`${ROOT}store`, ['.md', '.js', '.mjs']), ...walk(`${ROOT}tests`, ['.mjs'])];
   const found = [];
-  for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(/TODO_COWORK_[A-Z_]+/g)) found.push(`${f.slice(ROOT.length)}:${m[0]}`);
-  assert.deepEqual(found.filter((x) => !x.startsWith('store/metadata.md')), ['app.json:TODO_COWORK_EXPO_PROJECT_ID']);
+  const mark = new RegExp(['TODO', 'COWORK'].join('_'), 'g');
+  for (const f of files) for (const m of readFileSync(f, 'utf8').matchAll(mark)) found.push(f.slice(ROOT.length));
+  assert.deepEqual(found, []);
+  const app = JSON.parse(readFileSync(`${ROOT}app.json`, 'utf8')).expo;
+  assert.match(app.extra.eas.projectId, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+  assert.equal(app.owner, 'bkdeveloper123');
+  assert.equal(app.slug, 'estimatemaker');
   assert.match(readFileSync(`${ROOT}docs/index.html`, 'utf8'), /apps\.apple\.com\/app\/id6835862478/);
 });
 

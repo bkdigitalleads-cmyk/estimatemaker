@@ -2,7 +2,7 @@
 
 Everything here is pasted into App Store Connect by Brian and Cowork. No em dashes anywhere, no brand, store or bank names, no "Unlock", "Premium", "Seamless", "Effortless", "Welcome", "Let's", "Professional-grade" or exclamation marks.
 
-App record: bundle id com.bwk.estimatemaker, SKU estimatemaker, ASC app id 6835862478 (eas.json `ascAppId`). RevenueCat public iOS key in app.json `extra.revenueCatApiKeyIos`. Expo project: not created yet; app.json `extra.eas.projectId` is still `TODO_COWORK_EXPO_PROJECT_ID`.
+App record: bundle id com.bwk.estimatemaker, SKU estimatemaker, ASC app id 6835862478 (eas.json `ascAppId`). RevenueCat public iOS key in app.json `extra.revenueCatApiKeyIos`. Expo project bkdeveloper123/estimatemaker (projectId 856ac8c1-33de-48e9-a845-64e9cd7354a3, app.json `extra.eas.projectId`).
 
 ## Name (30/30)
 Estimate Maker & Receipt Maker

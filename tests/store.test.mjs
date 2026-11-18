@@ -57,7 +57,7 @@ test('website: landing, privacy and support pages with the support address, the 
   const index = readFileSync(`${ROOT}docs/index.html`, 'utf8');
   assert.match(index, /https:\/\/apps\.apple\.com\/app\/id6835862478/);
   for (const m of index.matchAll(/src="([^"]+\.png)"/g)) assert.ok(existsSync(`${ROOT}docs/${m[1]}`), m[1]);
-  for (const f of ['index.html', 'privacy.html', 'support.html']) assert.ok(!/TODO_COWORK/.test(readFileSync(`${ROOT}docs/${f}`, 'utf8')), f);
+  for (const f of ['index.html', 'privacy.html', 'support.html']) assert.ok(!/TODO_[C]OWORK/.test(readFileSync(`${ROOT}docs/${f}`, 'utf8')), f);
 });
 
 function pngSize(file) {
