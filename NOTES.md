@@ -1,0 +1,82 @@
+# Estimate Maker change log
+
+Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
+
+- 2026-11-18: 1.0.0 build 1, the last value from Cowork: app.json `extra.eas.projectId` is 856ac8c1-33de-48e9-a845-64e9cd7354a3 (Expo project bkdeveloper123/estimatemaker); owner bkdeveloper123 and slug estimatemaker already matched. No Cowork placeholder is left anywhere in the repo (a test now checks every app, docs, store, notes and test file). The icon stays concept 1, the orange ticket (store/icon.js `CHOSEN = 'ticket'`, assets/icon.png unchanged). Checked: `npx tsc --noEmit` clean, `npm test` passing, `npx expo config --type introspect` shows the project id, owner and slug.
+
+- 2026-11-17: 1.0.0 build 1, step 7 of 7: website, store listing, screenshots, and the values from Cowork.
+  - Values from Cowork: app.json `extra.revenueCatApiKeyIos` is the public RevenueCat key (purchases on), eas.json `ascAppId` 6835862478. The Expo project was not created yet, so its id stayed a placeholder in app.json `extra.eas.projectId` (filled in on Nov 18). Store name accepted as written. Product ids, entitlement and offering were already exactly as set up.
+  - Website (docs/, GitHub Pages): landing page (ticket and ledger look, the app's own screens and the three PDF templates, an App Store link to id6835862478), privacy.html (Purchases through RevenueCat, not linked to identity, and nothing more is collected; documents stay on the phone), support.html (how everything works, bkdigitalleads@gmail.com, "we reply within two business days"), style.css with the Plex fonts self-hosted (no third-party requests), og-image, sitemap and robots.
+  - store/metadata.md: name, subtitle, keywords (100/100, no word from the name or subtitle), promotional text, description, What's New, category, age rating, privacy label, pricing and RevenueCat setup, review notes.
+  - store/screenshots.js: six captioned screenshots at 1206x2622 (store/screenshots/6.3) and 1320x2868 (6.9) from 3x renders of the app's screens in store/screens. Captions in Plex Condensed with an orange rule; no frames, gradients or emoji.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 57 passing (new: name and subtitle, keyword rules, promo length, product ids, the privacy page, the website files and links, screenshot counts and sizes; only the Expo project id is still a placeholder), `npx expo export --platform ios` bundles, `npx expo config --type introspect` shows `entitlements: {}`, no usage strings, bundle com.bwk.estimatemaker build 1.
+
+## TestFlight checklist (1.0.0 build 1)
+
+1. Fresh install: the four onboarding screens (the estimate page, the list rows, the signature drawing itself in, the receipt), then Make your first estimate with your own business name, a line and a price, See the estimate; check the page draws with the right fonts.
+2. The trial and reminder screens and the paywall: weekly first and preselected, prices from the store, close after 3 seconds, then "Your first two PDFs are free" and the app opening on that estimate.
+3. Your business: add a logo from Photos (try a PNG with a clear background and a HEIC photo); fill the address and a license number.
+4. On the estimate: add a client, a saved item, a second line with a discount and tax; type amounts with the iPhone's own keyboard; tap Sign here and sign with a finger.
+5. Send: Share PDF to Files and open it; Mail (with and without a Mail account); Print to a printer or Save as PDF. Then Make invoice, Make receipt, and send a third PDF to see the paywall.
+6. Settings: change the currency (try EUR on a German region phone, JPY), the paper size, the numbering; check the home numbers and search.
+7. Dark mode, the largest Dynamic Type size, and VoiceOver on the home list and the editor.
+8. Restore purchases on a second device; the trial reminder notification a day before the sandbox trial ends.
+
+- 2026-11-17: 1.0.0 build 1, step 6 of 7: design pass.
+  - New look, "the job ticket" (docs/design/NOTES.md): manila background, paper tickets, near-black ink, tape-measure orange (#C9480B; #F07A38 in dark) on the main button only. Type is IBM Plex, the PDFs' family: Plex Sans Condensed SemiBold for titles, field labels in capitals with a rule and the main button's lettering; Plex Mono for every amount and number. Newsreader and its licence are gone.
+  - The home numbers sit on a ticket stub with a perforation and a torn edge; documents, clients and items are ruled ledger lines with a margin rule (type and date in the margin, a rubber stamp for the status); totals end with a rule over the total and a double rule over the balance due; small corners; outlined quiet buttons; picked choices and switches in ink.
+  - Fixes found in the "before" renders: number fields running off the row, "Preview and send" not fitting (now Send, which still opens the preview first), the line sheet's cut-off buttons, the graphite color dot lost in dark, the paywall's picked plan going dark under the new tokens, the onboarding receipt cropped through the name.
+  - Icon: four concepts at 60 px on light and dark wallpapers in docs/design/icon-options.png (store/icon.js); "ticket" chosen and written to assets/ (icon, splash, favicon, Android foreground). app.json and the startup screens use the new background colors.
+  - Renders: docs/design/before (end of step 5) and docs/design/after, 26 screens each in light and dark, 393x852 points at 2x, from a throwaway react-native-web copy of the app (described in docs/design/NOTES.md, not in the repo).
+  - Checked: `npx tsc --noEmit` clean, `npm test` 51 passing (new: one accent on the main button only, contrast of the button lettering, ink and soft ink in both themes, UI fonts are the bundled Plex), every render looked at.
+
+- 2026-11-17: 1.0.0 build 1, step 5 of 7: onboarding and paywall.
+  - First launch: four screens that show the product, each a real render, not instructions: the top of an estimate drawn by the PDF layout ("Estimates that look like your business."), the list's own rows with an accepted estimate and its new invoice ("Turn a yes into an invoice."), a client's signature drawing itself in over the total with the pen engine ("Get it signed on the spot."), and a receipt's totals with the PAID stamp ("Paid. Send the receipt."). Sample content is a made-up one-person carpentry business (src/sampleDoc.ts).
+  - Then "Make your first estimate.": the business name, one line of work and its price, then "See the estimate" shows that estimate as its PDF page, before any paywall. It is saved as a draft and the name goes into the business profile. Skip for now is there.
+  - Then the engine's trial explainer and reminder screens (only when RevenueCat says this Apple ID can get the free trial) and the onboarding paywall, with "Your first estimate is saved." and a small page at the top. Close appears after 3 seconds; closing shows "Your first two PDFs are free."; the app then opens on that first estimate.
+  - Paywall: estimate_pro_weekly ($rc_weekly, 3-day trial) first and preselected, then yearly and lifetime; every price and the trial length from RevenueCat; Continue, never Subscribe; Restore, Terms and Privacy on screen. A trial that starts here asks for a rating once.
+  - Anyone who already has a document or Pro skips onboarding.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 50 passing (the onboarding order and the paywall rules are checked in the source), `npx expo export --platform ios` bundles.
+
+- 2026-11-17: 1.0.0 build 1, step 4 of 7: PDF templates.
+  - One layout (src/pdf/layout.ts) drawn by pdf-lib into the PDF and by Skia on screen (src/ui/PageView.tsx), with the same IBM Plex font files (SIL OFL, licence in assets/fonts), measured with fontkit the way pdf-lib sets text. Three templates (Ledger, Banner, Plain), six accent colors, US Letter and A4; long documents run over pages. Signatures print as vector paths. Fonts are subset; a one-page PDF is about 50 KB. Details and the guardrail in docs/design/NOTES.md.
+  - Preview screen: template and color pickers (saved as the default), every page drawn as it will print, Share PDF, Mail (the client's address filled in, a short note, the PDF attached; the share sheet when Mail has no account) and Print. Nothing goes out until the business has a name. The free-export gate is checked before the PDF is made, and a free export is used only when the PDF went out. A draft that goes out is marked sent. The first PDF out asks for a rating (once ever, never while signing).
+  - Marking an invoice paid, by hand or by making its receipt, sets it paid in full.
+  - Samples: docs/design/pdf-templates.png and docs/design/pdf/ (eight PDFs with PNGs, from `node store/pdf-samples.mjs`).
+  - Checked: `npx tsc --noEmit` clean, `npm test` 49 passing (11 new: fonts and currency glyphs, measuring, wrapping, every template, type and paper size inside the page, totals as printed, multi-page with repeated headers and page counts, signature paths, a real PDF written and read back with four subset fonts and a logo, base64, the guardrail), `npx expo export --platform ios` bundles. The PNGs were looked at one by one.
+
+- 2026-11-17: 1.0.0 build 1, step 3 of 7: screens.
+  - Four tabs: Documents, Clients, Items, Settings. Screens over the tabs go on a simple stack (back pops one); after convert or duplicate the new document replaces the old one, so back goes to the list.
+  - Documents (home): the business name, two numbers on a paper strip (billed this month and unpaid, with the overdue count; other currencies on a small line), New document (estimate, quote, invoice or receipt, each with one line saying what it is for), search by number, client or amount, type pills, and a filter sheet for status and client. Each row: type, number and date, client, amount, and a status stamp (OVERDUE in red when an invoice is past due).
+  - Editor: one scrolling page saved as you go (400 ms after the last change, and on leaving). Status pills that fit the type; client picker with find-or-add; date and due or valid-until on a month calendar with quick picks (On receipt, 7, 14, 30 days); lines with description, quantity, unit, rate, the per-line tax switch, Save to my items, move up and down, remove; saved items in one tap; discount as % or amount; tax rate; deposit or paid; Paid by on receipts; balance due (or credit); notes and terms with "use for every new one"; the owner's signature switch, or Add your signature; Sign here for the client. Bottom: Make invoice (or receipt) and Preview and send. More: change the number, duplicate, convert, delete.
+  - Sign here: the total above the pad, the Skia pad from the engine (Ink pen), undo and clear, the signer's name; an estimate or quote signed by the client is marked accepted. No rating prompt while it is open.
+  - Clients (A to Z, what each owes, their documents, New estimate for this client; deleting one keeps their documents), Items (price list), Your business (logo through the system photo picker, which needs no Photos permission, re-encoded as PNG through Skia; name, address, phone, email, website, tax or license number), Your signature, and Settings for currency, tax name and rate, due and valid days, numbering per type, template and paper size.
+  - Preview is a placeholder until step 4.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 38 passing, `npx expo export --platform ios` bundles.
+
+- 2026-11-17: 1.0.0 build 1, step 2 of 7: data layer.
+  - SQLite through expo-sqlite (src/db/native.ts, one file, estimatemaker.db, WAL), behind a small Db interface (src/db/schema.ts) so the same SQL runs on Node's built-in node:sqlite in the tests. Migrations are a list that only grows; PRAGMA user_version counts them; each runs in its own transaction, and a database from a newer app is refused rather than damaged.
+  - Tables: kv (settings, flags, counters for free exports), counters (prefix and next number per type), clients, items, docs (one model for all four types, with the client's details copied in so a sent document keeps what it printed, and the total and balance kept for the list), lines (in order).
+  - Money is integers in minor units (fixed scale of 100); src/money.ts is the only place that adds it up: each line rounded, discount as a percent or an amount (never more than the subtotal), tax only on taxable lines after their share of the discount, deposit or paid, balance (below zero is a credit). Currencies with no decimals round to whole units.
+  - src/numbering.ts: EST-, QUO-, INV-, REC- with their own sequences, four digits; a number typed ahead of the sequence moves the counter past it; deleted numbers are not reused.
+  - src/docs.ts: new drafts from the defaults, one-tap convert (estimate or quote to invoice marks the source accepted; invoice to receipt is paid in full and marks the invoice paid), duplicate, search and filters, overdue, and the home numbers (billed this month and unpaid, per currency; drafts count in neither).
+  - src/format.ts: money, numbers and dates in the phone's locale with Intl; typed amounts read with either decimal mark. src/settings.ts: business profile, logo, owner signature and defaults, with fallbacks for damaged rows; Letter or A4 and Tax, VAT or GST from the region.
+  - The settings key/value store moved from settings.json into the kv table.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 38 passing (24 new: totals, tax, discount, rounding, typed amounts, numbering, migrations including a failed one rolling back, every read and write, convert, duplicate, statuses, clients and items, filters, home numbers, settings, locale formats, dates).
+
+- 2026-11-17: 1.0.0 build 1, step 1 of 7: scaffold and engine port (branch claude/estimate-1.0.0).
+  - Started from Signature Maker main at 5a6391f: same Expo SDK 57.0.12, React Native 0.86.3, React 19.2.3, TypeScript 6.0, EAS workflow files (.eas/workflows/deploy.yml and submit.yml, unchanged), eas.json (local version source, no auto-increment), plugins/withoutPushEntitlement.js (last in plugins), index.ts startup guard, App.tsx render guard and font-load wait.
+  - Kept as engine copies: src/purchases.ts (unchanged), src/trial.ts, src/reminder.ts (new id and wording), src/testing.ts, src/offer.ts (weekly now first and preselected on both paywalls, as briefed), src/reviews.ts and src/rules.ts (two triggers: first PDF out and a trial started; the guard is "never while a client is signing"), src/stroke.ts and src/sample.ts (the pen engine, for the owner's and the client's signatures), src/ui (Kit, Glyph, motion, TabBar, Pad, InkView), the paywall and the onboarding trial and reminder screens.
+  - Dropped: the signature library, typed script fonts and their licences, PDF placement and flattening, react-native-pdf and react-native-blob-util, expo-document-picker, expo-clipboard, expo-media-library, "Open in" document types, the Library, Create, Export, Documents and Sign screens.
+  - Added: expo-sqlite 57.0.4, expo-print 57.0.2, expo-localization 57.0.2, expo-asset 57.0.20 (versions from expo's bundledNativeModules.json; `npx expo install` could not reach api.expo.dev from here), @pdf-lib/fontkit 1.1.1.
+  - Identity: name Estimate Maker, slug and scheme estimatemaker, bundle com.bwk.estimatemaker, 1.0.0 build 1, iPhone only, category Business. Three placeholders for Cowork: the Expo project id, the RevenueCat public iOS key and the App Store Connect app id (all filled in since).
+  - src/gates.ts rewritten: the first two documents out are free; a third needs Pro; a document that went out free can always go out again.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 14 passing, `npx expo export --platform ios` bundles, `npx expo config --type introspect` shows `entitlements: {}` and no usage strings.
+
+## Noticed, not changed
+
+- Money is stored at a fixed scale of 100. Currencies with three decimals (KWD, BHD, OMR) are rounded to two.
+- Tax is always added on top; prices that already include tax (common with VAT) are not handled.
+- The on-screen page preview is drawn by Skia with the PDF's fonts; only a device build shows whether Skia's text matches pdf-lib's to the pixel (both use the same font files and widths).
+- The home screen name "Estimate Maker" is 14 characters; iOS may shorten it under the icon.
+- The renders come from a react-native-web copy; the iOS switch and keyboard look slightly different on a phone.

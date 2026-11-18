@@ -1,0 +1,9 @@
+{
+  "name": "store",
+  "private": true,
+  "description": "Store tools only (icon.js, screenshots.js, pdf-samples.mjs). Not part of the app bundle.",
+  "dependencies": {
+    "opentype.js": "^1.3.4",
+    "sharp": "^0.35.3"
+  }
+}
