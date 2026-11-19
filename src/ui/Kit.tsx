@@ -308,7 +308,8 @@ export function Drawer({ theme, visible, onClose, children, title }: { theme: Th
             </Text>
             <GlyphButton theme={theme} glyph="close" label="Close" onPress={onClose} />
           </View>
-          <ScrollView keyboardShouldPersistTaps="handled" bounces={false} showsVerticalScrollIndicator={false}>
+          {/* Shrinks to the room left above the keyboard and scrolls, so every control can be reached while typing. */}
+          <ScrollView style={styles.drawerScroll} keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" showsVerticalScrollIndicator={false}>
             {children}
           </ScrollView>
         </View>
@@ -333,5 +334,6 @@ const styles = StyleSheet.create({
   topTitle: { flex: 1, textAlign: 'center' },
   toast: { position: 'absolute', left: space.xl, right: space.xl, borderRadius: radius.small, paddingVertical: space.m, paddingHorizontal: space.l },
   drawer: { borderTopLeftRadius: radius.large, borderTopRightRadius: radius.large, borderWidth: 1, paddingHorizontal: space.l, paddingTop: space.s, maxHeight: '88%' },
+  drawerScroll: { flexGrow: 0, flexShrink: 1 },
   drawerHead: { flexDirection: 'row', alignItems: 'center', minHeight: 52 },
 });

@@ -154,7 +154,7 @@ test('app.json: identity, iPhone only, no permissions, push entitlement plugin l
   assert.equal(app.slug, 'estimatemaker');
   assert.equal(app.ios.bundleIdentifier, 'com.bwk.estimatemaker');
   assert.equal(app.version, '1.0.0');
-  assert.equal(app.ios.buildNumber, '2');
+  assert.equal(app.ios.buildNumber, '3');
   assert.equal(app.ios.supportsTablet, false);
   assert.equal(JSON.parse(readFileSync(`${ROOT}package.json`, 'utf8')).version, app.version);
   assert.equal(app.owner, 'bkdeveloper123');
@@ -268,4 +268,55 @@ test('design: one accent, on the main button only; its lettering readable in bot
   assert.match(theme, /IBMPlexSansCondensed-SemiBold\.ttf/);
   assert.match(theme, /IBMPlexMono-Medium\.ttf/);
   assert.ok(!/Newsreader/.test(theme));
+});
+
+// ---------- first-run fixes (build 3) ----------
+
+test('previews of the person\'s own estimate carry only their saved signature; the sample signature stays on the sample pages', async () => {
+  const H = await import('../src/lineHelp.ts');
+  const own = { strokes: [{ pen: 'ink', size: 1, pts: [[1, 1, 0, 0]] }], width: 300, height: 120 };
+  assert.equal(H.previewSignature('own', null, SM.SAMPLE_SIGNATURE), null, 'no saved signature: none on the page');
+  assert.equal(H.previewSignature('own', { ...own, strokes: [] }, SM.SAMPLE_SIGNATURE), null);
+  assert.equal(H.previewSignature('own', own, SM.SAMPLE_SIGNATURE), own);
+  assert.equal(H.previewSignature('sample', own, SM.SAMPLE_SIGNATURE).strokes, SM.SAMPLE_SIGNATURE);
+  // Wired that way: the first-estimate page and the paywall's small page use the saved one; only the sample pages use the sample.
+  const welcome = readFileSync(`${ROOT}src/screens/Welcome.tsx`, 'utf8');
+  const app = readFileSync(`${ROOT}App.tsx`, 'utf8');
+  assert.match(welcome, /<PageWindow[^>]*doc=\{doc\}[^>]*ownerSignature=\{previewSignature\('own', data\.signature, \[\]\)\}/);
+  assert.match(app, /<PageWindow[^>]*doc=\{firstDoc\}[^>]*ownerSignature=\{previewSignature\('own', data\.signature, \[\]\)\}/);
+  const show = readFileSync(`${ROOT}src/ui/Showcase.tsx`, 'utf8');
+  assert.ok(!/ownerSignature: \{ strokes: SAMPLE_SIGNATURE/.test(show), 'no hard-wired sample signature in PageWindow');
+  for (const m of show.matchAll(/<PageWindow[^>]*>/g)) assert.match(m[0], /doc=\{sampleDoc\(/, 'only sample documents inside Showcase');
+});
+
+test('the line editor makes Quantity and Unit obvious: one-tap units, a warning for a number in Unit, and how the line will read', async () => {
+  const H = await import('../src/lineHelp.ts');
+  assert.deepEqual(H.UNIT_CHOICES, ['hr', 'job', 'pc', 'day', 'ft', 'each']);
+  assert.equal(H.lineExample(2, 'hr', '$75.00', 'en-US'), '2 hr × $75.00');
+  assert.equal(H.lineExample(1, '', '$75.00', 'en-US'), '1 × $75.00');
+  assert.equal(H.lineExample(1.5, ' day ', '75,00 €', 'de-DE'), '1,5 day × 75,00 €');
+  // The case from TestFlight: "2 hr" typed into Unit with Quantity 1 shows as "1 2 hr" before Done, with a warning.
+  assert.equal(H.lineExample(1, '2 hr', '$75.00', 'en-US'), '1 2 hr × $75.00');
+  assert.equal(H.unitHasNumber('2 hr'), true);
+  assert.equal(H.unitHasNumber('hr'), false);
+  assert.equal(H.unitHasNumber(''), false);
+  const ed = readFileSync(`${ROOT}src/screens/Editor.tsx`, 'utf8');
+  assert.match(ed, /Quantity is the number\. Unit is the word after it/);
+  assert.match(ed, /UNIT_CHOICES\.map/);
+  assert.match(ed, /unitHasNumber\(l\.unit\)/);
+  assert.match(ed, /lineExample\(l\.qty, l\.unit, formatMoney\(l\.rate, currency, locale\), locale\)/);
+});
+
+test('the fourth intro screen shows the receipt at full width, cropped only at the bottom', () => {
+  const show = readFileSync(`${ROOT}src/ui/Showcase.tsx`, 'utf8');
+  const receipt = show.slice(show.indexOf('export function ReceiptShow'));
+  assert.match(receipt, /zoom=\{1\} top=\{0\} left=\{0\}/);
+});
+
+test('drawers shrink to the room above the keyboard and scroll, so Remove line can be reached while typing', () => {
+  const kit = readFileSync(`${ROOT}src/ui/Kit.tsx`, 'utf8');
+  const drawer = kit.slice(kit.indexOf('export function Drawer'));
+  assert.match(drawer, /<KeyboardAvoidingView behavior="padding"/);
+  assert.match(drawer, /<ScrollView style=\{styles\.drawerScroll\}/);
+  assert.match(kit, /drawerScroll: \{ flexGrow: 0, flexShrink: 1 \}/);
 });

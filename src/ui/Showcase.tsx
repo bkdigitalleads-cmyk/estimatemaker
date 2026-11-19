@@ -11,13 +11,17 @@ import { SAMPLE_BUSINESS, sampleDoc } from '../sampleDoc';
 import { SAMPLE_SIGNATURE } from '../sample';
 import { ACCENTS } from '../settings';
 import type { Doc } from '../model';
-import type { Business } from '../settings';
+import type { Business, OwnerSignature } from '../settings';
+import { previewSignature } from '../lineHelp';
 import { formatMoney } from '../format';
 import { docTotals, rowOf } from '../docs';
 import PageView from './PageView';
 import { PlayInk } from './InkView';
 import { DocLine } from '../screens/Documents';
 import Glyph from './Glyph';
+
+/** The made-up sample business's signature, only for its own sample pages. */
+const SAMPLE_OWNER = previewSignature('sample', null, SAMPLE_SIGNATURE);
 
 export function useKit(): PdfKit | null {
   const [kit, setKit] = useState<PdfKit | null>(null);
@@ -33,10 +37,15 @@ export function useKit(): PdfKit | null {
   return kit;
 }
 
-/** A window onto part of a page: `zoom` times the box width, from `top` (a share of the page height). */
-export function PageWindow({ theme, doc, business = SAMPLE_BUSINESS, width, height, zoom = 1, top = 0, left = 0, accent = ACCENTS[0].hex, locale = 'en-US', label }: { theme: Theme; doc: Doc; business?: Business; width: number; height: number; zoom?: number; top?: number; left?: number; accent?: string; locale?: string; label: string }) {
+/**
+ * A window onto part of a page: `zoom` times the box width, from `top` (a
+ * share of the page height). `ownerSignature` is what prints on the business
+ * line: the sample's for the made-up sample pages, and for a page built from
+ * the person's own business only the signature they saved (or none).
+ */
+export function PageWindow({ theme, doc, business = SAMPLE_BUSINESS, ownerSignature, width, height, zoom = 1, top = 0, left = 0, accent = ACCENTS[0].hex, locale = 'en-US', label }: { theme: Theme; doc: Doc; business?: Business; ownerSignature: OwnerSignature | null; width: number; height: number; zoom?: number; top?: number; left?: number; accent?: string; locale?: string; label: string }) {
   const kit = useKit();
-  const pages = useMemo(() => (kit ? pagesFor(kit, { doc, business, logo: null, ownerSignature: { strokes: SAMPLE_SIGNATURE, width: 361, height: 232 }, template: 'ledger', accent, paper: 'letter', locale }) : null), [kit, doc, business, accent, locale]);
+  const pages = useMemo(() => (kit ? pagesFor(kit, { doc, business, logo: null, ownerSignature, template: 'ledger', accent, paper: 'letter', locale }) : null), [kit, doc, business, ownerSignature, accent, locale]);
   const pageW = width * zoom;
   return (
     <View style={[styles.window, { width, height, backgroundColor: '#FFFFFF', borderColor: theme.edge }]} accessible accessibilityRole="image" accessibilityLabel={label}>
@@ -51,7 +60,7 @@ export function PageWindow({ theme, doc, business = SAMPLE_BUSINESS, width, heig
 
 /** 1: an estimate's top half, with the business, the type and the first lines. */
 export function EstimateShow({ theme, width, height }: { theme: Theme; width: number; height: number }) {
-  return <PageWindow theme={theme} doc={sampleDoc('estimate')} width={width} height={height} zoom={1.08} top={0.02} left={0.02} label="An estimate with the business name, number, client and lines" />;
+  return <PageWindow theme={theme} doc={sampleDoc('estimate')} ownerSignature={SAMPLE_OWNER} width={width} height={height} zoom={1.08} top={0.02} left={0.02} label="An estimate with the business name, number, client and lines" />;
 }
 
 /** 2: the list as it looks after one tap: the estimate accepted and its invoice. */
@@ -94,7 +103,8 @@ export function SignShow({ theme, width }: { theme: Theme; width: number }) {
 
 /** 4: a receipt's totals with the PAID stamp. */
 export function ReceiptShow({ theme, width, height }: { theme: Theme; width: number; height: number }) {
-  return <PageWindow theme={theme} doc={sampleDoc('receipt', { notes: '', lines: sampleDoc('receipt').lines.slice(0, 2) })} width={width} height={height} zoom={1.1} top={0.16} left={0} accent={ACCENTS[2].hex} label="A receipt with the amount paid and a paid stamp" />;
+  // The whole width of the page, as on the first screen, cropped only at the bottom.
+  return <PageWindow theme={theme} doc={sampleDoc('receipt', { notes: '', lines: sampleDoc('receipt').lines.slice(0, 2) })} ownerSignature={SAMPLE_OWNER} width={width} height={height} zoom={1} top={0} left={0} accent={ACCENTS[2].hex} label="A receipt with the amount paid and a paid stamp" />;
 }
 
 const styles = StyleSheet.create({

@@ -9,6 +9,7 @@ import { trialLength } from '../offer';
 import Glyph from '../ui/Glyph';
 import { InkButton, Panel, Row, Tap } from '../ui/Kit';
 import { ConvertShow, EstimateShow, PageWindow, ReceiptShow, SignShow } from '../ui/Showcase';
+import { previewSignature } from '../lineHelp';
 import { useData } from '../data';
 import { decimalMark } from '../format';
 import { parseAmount } from '../money';
@@ -106,7 +107,7 @@ export function FirstEstimate({ onDone }: { onDone: (docId: string | null) => vo
     return (
       <View style={[styles.container, { backgroundColor: theme.bg, paddingBottom: Math.max(insets.bottom, space.l) }]}>
         <View style={styles.visual}>
-          <PageWindow theme={theme} doc={doc} business={{ ...data.business, name: name.trim() }} width={w} height={Math.round(w * 1.0)} zoom={1.0} top={0} accent={data.defaults.accent} locale={data.locale.tag} label={`Your first estimate, ${doc.number}, from ${name.trim()}`} />
+          <PageWindow theme={theme} doc={doc} business={{ ...data.business, name: name.trim() }} ownerSignature={previewSignature('own', data.signature, [])} width={w} height={Math.round(w * 1.0)} zoom={1.0} top={0} accent={data.defaults.accent} locale={data.locale.tag} label={`Your first estimate, ${doc.number}, from ${name.trim()}`} />
         </View>
         <View style={styles.wordsUnder}>
           <Text style={[type.title, { color: theme.ink }]} accessibilityRole="header">
