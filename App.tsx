@@ -22,6 +22,7 @@ import type { DocType } from './src/model';
 import PaywallModal from './src/screens/Paywall';
 import Welcome, { FirstEstimate, TrialSteps } from './src/screens/Welcome';
 import { PageWindow } from './src/ui/Showcase';
+import { previewSignature } from './src/lineHelp';
 import type { Doc } from './src/model';
 import TabBar, { Tab } from './src/ui/TabBar';
 import { Drawer, InkButton, Title, Toast } from './src/ui/Kit';
@@ -120,7 +121,7 @@ function Shell() {
           hero={
             firstDoc ? (
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.m }}>
-                <PageWindow theme={theme} doc={firstDoc} business={data.business} width={72} height={92} accent={data.defaults.accent} locale={data.locale.tag} label="Your first estimate" />
+                <PageWindow theme={theme} doc={firstDoc} business={data.business} ownerSignature={previewSignature('own', data.signature, [])} width={72} height={92} accent={data.defaults.accent} locale={data.locale.tag} label="Your first estimate" />
                 <Text style={[type.strong, { color: theme.ink, flex: 1 }]}>Your first estimate is saved.</Text>
               </View>
             ) : null

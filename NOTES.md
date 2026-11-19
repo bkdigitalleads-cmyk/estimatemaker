@@ -2,6 +2,14 @@
 
 Newest first. One entry per commit: date, version/build, what changed and why, and how it was checked.
 
+- 2026-11-19: 1.0.0 build 3, first-run fixes from the TestFlight test of build 2 (branch claude/estimate-first-run-fixes).
+  - The first-estimate preview and the paywall's small page no longer print the sample signature on the person's own estimate: they show the owner signature only if one was saved (src/lineHelp.ts `previewSignature`; Showcase's PageWindow now takes the signature from its caller, and only the sample pages pass the sample one).
+  - Line editor: a one-line hint that Quantity is the number and Unit the word after it; one-tap units hr, job, pc, day, ft, each beside the free text Unit field; a red note when Unit contains a number; and the line as it will read (for example "2 hr × $75.00") above the amount and Done, so "1 2 hr" is visible before it is saved.
+  - Fourth intro screen: the receipt page fills the card width (zoom 1, no left or top offset) and is cropped only at the bottom, so the AMOUNT column and the PAID stamp show.
+  - Drawers (src/ui/Kit.tsx): the scroll area shrinks to the room left above the keyboard and scrolls, so Remove line in the line sheet can be reached while the keyboard is up.
+  - app.json `ios.buildNumber` 3; version stays 1.0.0. Nothing changed in purchases, numbering or the PDF layout.
+  - Checked: `npx tsc --noEmit` clean, `npm test` 62 passing (new: which signature a preview carries and that the own-estimate previews are wired to the saved one, the unit choices, the line example and the number-in-Unit check, the receipt crop, the drawer's keyboard fit, build number 3), `npx expo export --platform ios` bundles. Re-rendered and looked at: docs/design/after 07-line, 07b-line-unit-number (new), 20-onboarding-4, 22-first-estimate-pdf, 25-paywall-onboarding, light and dark. The keyboard itself cannot be shown in the web renders; Remove line with the keyboard up needs a TestFlight check.
+
 - 2026-11-18: 1.0.0 build 2, the pencil icon (branch claude/estimate-icon-pencil).
   - Brian chose a new app icon, a sheet with a pencil on green, to replace the orange ticket. The SVG is saved exactly as given in store/icon-pencil.svg, and store/icon.js now renders the shipped files from it: assets/icon.png (1024x1024, no alpha, square corners), splash-icon.png and splash-icon-dark.png, android-icon-foreground.png (app.json adaptive icon background set to the same green, #1F6F54), favicon.png, docs/icon-512.png, docs/apple-touch-icon.png and docs/og-image.png. The website's icon descriptions say what the new one shows. `node icon.js options` still draws the 1.0.0 concepts.
   - app.json `ios.buildNumber` 2 (version stays 1.0.0), so the merge makes a new TestFlight build. Nothing else in the app changed: the orange accent and every screen are as they were.

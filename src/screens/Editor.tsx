@@ -10,7 +10,8 @@ import { addDays, daysBetween, isoDay } from '../dates';
 import { lineAmount } from '../money';
 import { stepFor } from '../docs';
 import Glyph from '../ui/Glyph';
-import { Caption, Drawer, Field, GlyphButton, InkButton, Label, Panel, QuietButton, Row, Tap, TopBar } from '../ui/Kit';
+import { Caption, Drawer, Field, GlyphButton, InkButton, Label, Panel, Pill, QuietButton, Row, Tap, TopBar } from '../ui/Kit';
+import { lineExample, UNIT_CHOICES, unitHasNumber } from '../lineHelp';
 import { Choice, DateSheet, InputRow, MoneyRow, NumberRow, Section, SwitchRow, ValueRow } from '../ui/Form';
 import { InkView } from '../ui/InkView';
 import { tick } from '../ui/motion';
@@ -459,14 +460,30 @@ function LineEditor({
   return (
     <View style={{ gap: space.l, paddingBottom: space.s }}>
       <Field theme={theme} value={l.description} onChangeText={(description) => setL({ ...l, description })} placeholder="Describe the work or the part" multiline autoFocus={isNew} accessibilityLabel="Description" style={{ minHeight: 72, paddingTop: space.m }} />
+      <Caption theme={theme}>Quantity is the number. Unit is the word after it: 2 in Quantity and hr in Unit reads 2 hr.</Caption>
       <Panel theme={theme}>
         <NumberRow theme={theme} first label="Quantity" value={l.qty} onValue={(qty) => setL({ ...l, qty })} locale={locale} />
-        <InputRow theme={theme} label="Unit" value={l.unit} onChangeText={(unit) => setL({ ...l, unit })} placeholder="hr, ea, sq ft" autoCapitalize="none" style={{ textAlign: 'right' }} />
+        <InputRow theme={theme} label="Unit" value={l.unit} onChangeText={(unit) => setL({ ...l, unit })} placeholder="Optional, like hr" autoCapitalize="none" autoCorrect={false} style={{ textAlign: 'right' }} />
+        <View style={[styles.units, { borderTopColor: theme.rule }]} accessibilityRole="radiogroup" accessibilityLabel="Common units">
+          {UNIT_CHOICES.map((u) => (
+            <Pill key={u} theme={theme} label={u} on={l.unit.trim() === u} onPress={() => setL({ ...l, unit: l.unit.trim() === u ? '' : u })} />
+          ))}
+        </View>
+        {unitHasNumber(l.unit) ? (
+          <Text style={[type.small, styles.unitWarn, { color: theme.danger }]} accessibilityLiveRegion="polite">
+            Put the number in Quantity. Unit is only the word, like hr.
+          </Text>
+        ) : null}
         <MoneyRow theme={theme} label="Rate" value={l.rate} onValue={(rate) => setL({ ...l, rate })} currency={currency} locale={locale} />
         {taxLabel ? <SwitchRow theme={theme} label={`Charge ${taxLabel.toLowerCase()}`} value={l.taxable} onValue={(taxable) => setL({ ...l, taxable })} /> : null}
         {isNew ? <SwitchRow theme={theme} label="Save to my items" sub="Use it again on the next job" value={save} onValue={setSave} /> : null}
       </Panel>
-      <Text style={[type.strong, tabular, { color: theme.ink, textAlign: 'right' }]}>{formatMoney(lineAmount(l, stepFor(currency)), currency, locale)}</Text>
+      <View style={styles.example} accessible accessibilityLabel={`On the page: ${lineExample(l.qty, l.unit, formatMoney(l.rate, currency, locale), locale)}, ${formatMoney(lineAmount(l, stepFor(currency)), currency, locale)}`}>
+        <Text style={[type.small, tabular, { color: theme.inkSoft, flex: 1 }]} numberOfLines={1}>
+          {lineExample(l.qty, l.unit, formatMoney(l.rate, currency, locale), locale)}
+        </Text>
+        <Text style={[type.strong, tabular, { color: theme.ink }]}>{formatMoney(lineAmount(l, stepFor(currency)), currency, locale)}</Text>
+      </View>
       <InkButton theme={theme} label={isNew ? 'Add line' : 'Done'} onPress={() => onDone(l, save)} />
       {!isNew ? (
         <View style={styles.lineButtons}>
@@ -524,6 +541,9 @@ const styles = StyleSheet.create({
   client: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 64, paddingHorizontal: space.l, paddingVertical: space.m },
   line: { flexDirection: 'row', alignItems: 'center', gap: space.m, minHeight: 60, paddingHorizontal: space.l, paddingVertical: space.m },
   lineButtons: { flexDirection: 'row', gap: space.s, marginTop: space.s },
+  units: { flexDirection: 'row', flexWrap: 'wrap', gap: space.s, paddingHorizontal: space.l, paddingVertical: space.m, borderTopWidth: StyleSheet.hairlineWidth },
+  unitWarn: { paddingHorizontal: space.l, paddingBottom: space.m },
+  example: { flexDirection: 'row', alignItems: 'baseline', gap: space.m },
   sumRow: { flexDirection: 'row', alignItems: 'center', minHeight: 48, paddingHorizontal: space.l },
   double: { position: 'absolute', top: 2, left: 0, right: 0, height: 1 },
   discount: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: 56, paddingHorizontal: space.l, borderTopWidth: StyleSheet.hairlineWidth },

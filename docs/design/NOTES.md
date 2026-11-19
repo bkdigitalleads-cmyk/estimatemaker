@@ -29,6 +29,15 @@ What the "before" showed, and what changed:
 - The graphite color dot disappeared on the dark background; every color dot has a ring.
 - The receipt on the fourth onboarding screen was cropped through the client's name; it now starts at the left edge.
 
+## Build 3: first-run fixes (Nov 19, 2026)
+
+From Brian's TestFlight test of build 2. Re-rendered in `after/`: `07-line`, the new `07b-line-unit-number`, `20-onboarding-4`, `22-first-estimate-pdf` and `25-paywall-onboarding`, light and dark.
+
+- The first-estimate preview and the small page on the onboarding paywall drew the sample signature on the person's own estimate. A page built from their own business and document now carries only the signature they saved, or none (`src/lineHelp.ts` `previewSignature`); the sample signature stays on the made-up Okafor Carpentry pages and the Sign here demo.
+- The line editor said too little about Quantity and Unit ("2 hr" typed into Unit printed "1 2 hr"). It now has one line under the description ("Quantity is the number. Unit is the word after it"), one-tap units (hr, job, pc, day, ft, each) under the Unit field, a red note when Unit has a number in it, and the line as it will read ("2 hr × $75.00") beside the amount, above Done.
+- The fourth intro screen cut the receipt at the right edge (the AMOUNT column and the PAID stamp). The page now fills the card's width, like the first screen, and is cropped only at the bottom.
+- In the line sheet, Remove line sat behind the keyboard. Every drawer now shrinks to the room above the keyboard and scrolls, so every control can be reached while typing.
+
 ## Icon
 
 Build 2 (Nov 18, 2026): Brian chose a new icon, a sheet of paper with ruled lines and a yellow pencil, on green (#1F6F54). It is kept exactly as he drew it in `store/icon-pencil.svg`; `node store/icon.js` renders it, with no shape or color changed, to `assets/icon.png` (1024x1024, square corners, no alpha channel), both splash icons, the Android adaptive foreground (its background color is the same green), the favicon, and the website's `icon-512.png`, `apple-touch-icon.png` and `og-image.png`. Only the icon changed: the app keeps its manila, ink and tape-measure orange, and its screens are as they were.
